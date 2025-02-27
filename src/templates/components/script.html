@@ -1,0 +1,361 @@
+<span class="pop-up-wisudawan modal-cre" id="denah-wisudawan"></span>
+
+    <a class="scroll-to-top rounded" href="#page-top" style="display: none;">
+        <i class="fas fa-angle-up"></i>
+    </a>
+    <!-- Main Modal-->
+    <script src="https://mahasiswa.itp.ac.id/assets/js/chart.js/Chart.min.js"></script>
+
+    <!-- Page level custom scripts -->
+    <!--<script src="https://mahasiswa.itp.ac.id/assets/js/demo/chart-area-demo.js"></script>-->
+
+
+    <!--<script src="https://mahasiswa.itp.ac.id/assets/js/demo/chart-pie-demo.js"></script>-->
+    <script src="https://mahasiswa.itp.ac.id/assets/admin/vendor/jquery/jquery.min.js"></script>
+    <script src="https://mahasiswa.itp.ac.id/assets/admin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="https://mahasiswa.itp.ac.id/assets/admin/vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="https://mahasiswa.itp.ac.id/assets/admin/js/sb-admin-2.min.js"></script>
+
+    <!-- Page level plugins -->
+    <script src="https://mahasiswa.itp.ac.id/assets/admin/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="https://mahasiswa.itp.ac.id/assets/admin/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+
+    <!-- Page level custom scripts -->
+
+    <script src="https://mahasiswa.itp.ac.id/assets/js/extend.js"></script>
+    <script src="https://mahasiswa.itp.ac.id/assets/js/sweetalert.min.js"></script>
+    <script src="https://mahasiswa.itp.ac.id/assets/js/combo.js"></script>
+    <script src="https://mahasiswa.itp.ac.id/assets/js/utils.js"></script>
+    <script src="https://mahasiswa.itp.ac.id/assets/admin/vendor/chart.js/Chart.min.js"></script>
+
+    <link href="https://mahasiswa.itp.ac.id/assets/plugins/select2/select2.min.css" rel="stylesheet">
+    <script src="https://mahasiswa.itp.ac.id/assets/plugins/select2/select2.min.js"></script>
+
+    <script src="https://mahasiswa.itp.ac.id/assets/js/cropper.min.js"></script>
+    <script src="https://mahasiswa.itp.ac.id/assets/js/cropper.js"></script>
+
+    <script src="https://mahasiswa.itp.ac.id/assets/js/jquery.mask.js"></script>
+    <script src="https://mahasiswa.itp.ac.id/assets/js/jquery.mask.min.js"></script>
+
+
+
+
+
+
+    <!-- <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script> -->
+    <script src="https://mahasiswa.itp.ac.id/assets/js/jquery.inputmask.bundle.min.js"></script>
+
+    <script type="text/javascript" src="https://mahasiswa.itp.ac.id/assets/js/moment.min.js"></script>
+    <script type="text/javascript" src="https://mahasiswa.itp.ac.id/assets/js/daterangepicker.min.js"></script>
+    <script src="https://mahasiswa.itp.ac.id/assets/js/datepicker.min.js"></script>
+
+    <script type="text/javascript" src="https://mahasiswa.itp.ac.id/assets/js/bs-custom-file-input.js"></script>
+    <script type="text/javascript" src="https://mahasiswa.itp.ac.id/assets/js/bs-custom-file-input.min.js"></script>
+    <script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+
+    <script type="text/javascript" src="https://mahasiswa.itp.ac.id/assets/crop/scripts/jquery.Jcrop.js"></script>
+    <script type="text/javascript"
+        src="https://mahasiswa.itp.ac.id/assets/crop/scripts/jquery.SimpleCropper.js"></script>
+    <!-- <script src="https://mahasiswa.itp.ac.id/assets/js/disable.js"></script> -->
+    <script>
+        $('.cropme').simpleCropper();
+
+        Pusher.logToConsole = false;
+
+        var pusher = new Pusher('69796992ba468ce495b7', {
+            cluster: 'ap1'
+        });
+        notif_all();
+        var channel = pusher.subscribe('channel-mhsw');
+        channel.bind('event-info', function (data) {
+            console.log(JSON.stringify(data));
+
+            if (data.message == 'all-message') {
+                notif_all();
+            }
+            // console.log(data);
+            // alert(JSON.stringify(data));
+        });
+
+        $(document).ready(function () {
+            bsCustomFileInput.init()
+        })
+        alertSurvei();
+
+        function alertSurvei() {
+            $.ajax({
+                url: "https://mahasiswa.itp.ac.id/dashboard/cek_survei",
+                type: "GET",
+                dataType: 'JSON',
+                success: function (response) {
+                    // notif_all()
+                    // console.log(response);
+                    if (response.param == 'false') {
+                        $("#loading-progress").show();
+                        $('#myModalDashboard').modal({
+                            backdrop: 'static',
+                            keyboard: false
+                        });
+                    }
+                }
+            });
+
+        }
+
+        function updateNotif(IDLog) {
+            $.ajax({
+                type: "POST",
+                data: {
+                    fileID: IDLog
+                },
+                dataType: 'JSON',
+                url: "https://mahasiswa.itp.ac.id/notifikasi/update_notif",
+                success: function (response) {
+                    notif_all()
+                }
+            });
+        }
+
+
+        function notif_all() {
+            $.ajax({
+                type: "POST",
+                dataType: 'JSON',
+                url: "https://mahasiswa.itp.ac.id/notifikasi/view",
+                success: function (response) {
+                    // console.log(response);
+                    $('.notif_tugas_akhir').html(response.view);
+                    $('#notif_ta').html(response.Tot);
+                }
+            });
+        }
+
+        // $.ajax({
+        //     type: "POST",
+        //     dataType: 'JSON',
+        //     url: "https://mahasiswa.itp.ac.id/nilai/cekTunggakanBank",
+        //     success: function(response) {
+        //         // console.log(response);
+        //         // $('#Tunggakan').html(parseInt(response.TotalTunggakan).toLocaleString());
+        //     }
+        // });
+
+        $(document).ready(function () {
+            blockDIV();
+        });
+
+        function blockDIV() {
+            $.ajax({
+                url: "https://mahasiswa.itp.ac.id/nilai/cekTunggakan",
+                method: "GET",
+                dataType: 'json',
+                success: function (data) {
+                    var text = data.pesan;
+                    var title = data.title;
+                    var Nilai = data.Nilai;
+                    var SKS = data.SKS;
+                    $('#Tunggakan').html(parseInt(data.Tunggakan).toLocaleString());
+                    if (SKS == 0) {
+                        $('.NilaiUTS').addClass('modal-cre');
+                        $('.NilaiCetakUAS').addClass('modal-cre');
+                        $('.NilaiCetakUTS').addClass('modal-cre');
+                        $('.NilaiTranskrip').addClass('modal-cre');
+
+                    } else {
+                        if (data.Pembayaran == 'N') {
+                            // $(".NilaiSemester").attr("href", "#");
+                            // $('.NilaiSemester').addClass('Tunggakan');
+                            $('.NilaiTranskrip').addClass('Tunggakan');
+                            $('.NilaiUTS').addClass('Tunggakan');
+                            if (data.SttUTS == 'Y') {
+                                $('.NilaiCetakUTS').addClass('modal-cre');
+                            } else {
+                                $('.NilaiCetakUTS').addClass('Tunggakan');
+                            }
+                            if (data.SttUAS == 'Y') {
+                                $('.NilaiCetakUAS').addClass('modal-cre');
+                            } else {
+                                $('.NilaiCetakUAS').addClass('Tunggakan');
+                            }
+                            $(".Tunggakan").click(function () {
+                                swal({
+                                    title: 'Perhatian!!',
+                                    text: "Kamu Memiliki Tunggakan Akademik Sebesar Rp." + parseInt(data.Tunggakan).toLocaleString() + " Mohon Segera Dilunaskan",
+                                    closeOnClickOutside: false,
+                                    closeOnEsc: false,
+                                    button: "Tutup",
+                                });
+                            });
+                        } else {
+                            if (data.SttUAS == 'Y') {
+                                $('.NilaiCetakUAS').addClass('modal-cre');
+                            } else {
+                                $('.NilaiCetakUAS').addClass('Tunggakan');
+                            }
+                            $('.NilaiTranskrip').addClass('modal-cre');
+                            $('.NilaiUTS').addClass('modal-cre');
+                            $('.NilaiCetakUTS').addClass('modal-cre');
+
+                            $(".Tunggakan").click(function () {
+                                swal({
+                                    title: 'Perhatian!!',
+                                    text: "Kamu Memiliki Tunggakan Akademik Sebesar Rp." + parseInt(data.Tunggakan).toLocaleString() + " Mohon Segera Dilunaskan",
+                                    closeOnClickOutside: false,
+                                    closeOnEsc: false,
+                                    button: "Tutup",
+                                });
+                            });
+                        }
+
+                    }
+
+                    // if (data.UTS == false) {
+                    //     $('.class_block_uts').removeClass('modal-cre').addClass('modal-block_uts');
+                    //     $(".modal-block_uts").click(function() {
+                    //         swal({
+                    //             title: title,
+                    //             text: text,
+                    //             closeOnClickOutside: false,
+                    //             closeOnEsc: false,
+                    //             button: "Tutup",
+                    //         })
+                    //         // .then((value) => {
+                    //         //     window.location.href = "https://mahasiswa.itp.ac.id/dashboard";
+                    //         // });
+                    //     });
+                    // } else {
+                    //     $('.class_block_uts').removeClass('modal-block_uts').addClass('modal-cre');
+                    // }
+
+                    // if (data.status == true) {
+                    //     $('.class_block').removeClass('modal-cre').addClass('modal-block');
+                    //     $(".modal-block").click(function() {
+                    //         swal({
+                    //             title: title,
+                    //             text: text,
+                    //             closeOnClickOutside: false,
+                    //             closeOnEsc: false,
+                    //             button: "Tutup",
+                    //         })
+                    //         // .then((value) => {
+                    //         //     window.location.href = "https://mahasiswa.itp.ac.id/dashboard";
+                    //         // });
+                    //     });
+                    //     // blockDIVkhs(text, title);
+                    // } else {
+                    //     $('.class_block').removeClass('modal-block').addClass('modal-cre');
+                    // }
+
+                }
+            });
+        }
+    </script>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/series-label.js"></script>
+    <script src="https://code.highcharts.com/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/modules/export-data.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <script>
+        $(document).ready(function () {
+
+
+
+            // cek_tunggakan();
+            ipk();
+            // $(".pop-up-pustaka").click(); 
+
+        });
+
+        var fa = document.getElementById('fa_id');
+
+        function removeClass() {
+            fa.className = fa.className.replace(new RegExp('(?:^|\\s)fa-spin(?!\\S)'), '');
+        }
+        // var myButton = document.getElementById('myButton');
+
+        // myButton.addEventListener("click", function() {
+        //     fa.className = fa.className + ' fa-spin';
+        //     $.get("https://mahasiswa.itp.ac.id/MasterAPI/pembayaran", function(data) {
+        //         swal('Perhatian', data, 'success');
+        //         window.setTimeout(() => {
+        //             removeClass()
+        //             // cek_tunggakan()
+        //         }, 2000);
+        //     });
+
+        // }, false);
+
+        cek_tunggakan()
+
+        function cek_tunggakan() {
+            $.ajax({
+                type: "POST",
+                url: "https://mahasiswa.itp.ac.id/Dashboard/data_tunggakan",
+                dataType: "JSON",
+                success: function (response) {
+                    $('#TunggakanDashboard').html(parseInt(response.Tunggakan).toLocaleString());
+                }
+            });
+        }
+
+        function ipk() {
+            $.ajax({
+                url: "https://mahasiswa.itp.ac.id/dashboard/info_grafika_ipk",
+                method: "POST",
+                dataType: 'json',
+                success: function (data) {
+                    var ArrayPen = data.IPK.split(',').map(Number);
+
+                    Highcharts.chart('container', {
+                        chart: {
+                            type: 'spline',
+                            scrollablePlotArea: {
+                                minWidth: 600,
+                                scrollPositionX: 1
+                            }
+                        },
+                        title: {
+                            text: ''
+                        },
+
+                        yAxis: {
+                            max: 4,
+                            title: {
+                                text: 'Nilai'
+                            },
+                        },
+                        xAxis: {
+                            categories: data.Semester,
+                        },
+                        tooltip: {
+                            headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+                            pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name} : </td>' +
+                                ' <td style="padding:0"> <b> {point.y:.1f}</b></td></tr>',
+                            footerFormat: '</table>',
+                            shared: true,
+                            useHTML: true
+                        },
+                        plotOptions: {
+                            line: {
+                                dataLabels: {
+                                    enabled: true
+                                },
+                                enableMouseTracking: true
+                            }
+                        },
+
+                        series: [{
+                            name: 'Indeks Prestasi Kumulatif (IPK)',
+                            data: ArrayPen
+                        }],
+
+
+                    });
+                }
+            });
+        }
+    </script>

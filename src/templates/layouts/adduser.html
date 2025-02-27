@@ -1,0 +1,27 @@
+{% extends 'layouts/base.html' %}
+{% block content %}
+
+<body>
+    <h2 class="text-xl font-bold mb-4">Add New User</h2>
+    <form method="POST" action="{{ url_for('routes.add_user') }}">
+        <div class="mb-4">
+            <label class="block text-gray-700">Username</label>
+            <input type="text" name="username" class="border border-gray-300 p-2 w-full" required>
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700">Role</label>
+            <select name="role" class="border border-gray-300 p-2 w-full" required>
+                {% for role in roles %}
+                    <option value="{{ role }}">{{ role }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-4">
+            <label class="block text-gray-700">Password</label>
+            <input type="password" name="password" class="border border-gray-300 p-2 w-full" required>
+        </div>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Add</button>
+        <a href="{{ url_for('routes.users') }}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Cancel</a>
+    </form>
+</body>
+{% endblock %}

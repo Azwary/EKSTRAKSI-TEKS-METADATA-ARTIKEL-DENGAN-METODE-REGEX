@@ -1,0 +1,32 @@
+{% extends 'layouts/base.html' %}
+{% block content %}
+
+<body>
+    <h2 class="text-xl font-bold mb-4">Edit User</h2>
+    <form method="POST" action="{{ url_for('routes.edit_user', user_id=user.id) }}">
+        <input type="hidden" name="id" value="{{ user.id }}">
+
+        <!-- Input Username -->
+        <div class="mb-4">
+            <label class="block text-gray-700">Username</label>
+            <input type="text" name="username" class="border border-gray-300 p-2 w-full" value="{{ user.username }}" required>
+        </div>
+
+        <!-- Dropdown Role -->
+        <div class="mb-4">
+            <label class="block text-gray-700">Role</label>
+            <select name="role" class="border border-gray-300 p-2 w-full" required>
+               {% for role in roles %}
+                   <option value="{{ role }}" {% if role == user.role %}selected{% endif %}>{{ role }}</option>
+               {% endfor %}
+           </select>
+           
+        </div>
+
+        <!-- Submit & Cancel Buttons -->
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Save</button>
+        <a href="{{ url_for('routes.users') }}" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Cancel</a>
+    </form>
+</body>
+
+{% endblock %}

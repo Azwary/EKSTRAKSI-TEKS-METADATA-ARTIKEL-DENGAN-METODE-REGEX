@@ -1,0 +1,43 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+<div style="height:100vh;">
+     <h1 class="text-2xl font-bold mb-4">Edit Article</h1>
+
+     <form method="post" action="/save" class="w-full max-w-4x">
+
+          <div class="mb-4 flex items-center">
+               <label class="text-gray-700 font-bold mr-8">Title</label>
+               <input type="text" name="title" value="{{ metadata.title }}" required
+                    class="w-full border p-2 rounded-md">
+          </div>
+          <div class="mb-4 flex items-center">
+               <label class="text-gray-700 font-bold mr-8">Author's Name</label>
+               <input type="text" name="authors" value="{{ metadata.authors }}" required
+                    class="w-full border p-2 rounded-md">
+          </div>
+          <div class="mb-4 flex items-center">
+               <label class="text-gray-700 font-bold mr-8">affiliation</label>
+               <input type="text" name="affiliations" value="{{ metadata.affiliations }}" required
+                    class="w-full border p-2 rounded-md">
+          </div>
+          <div class="mb-4 flex items-center">
+               <label class="text-gray-700 font-bold mr-8">abstract</label>
+               <textarea name="abstractEN" required
+                    class="w-full border p-2 rounded-md">{{ metadata.abstractEN }}</textarea>
+
+               <input type="hidden" name="filename" value="{{ metadata.filename }}">
+               <input type="hidden" name="file_path" value="{{ metadata.file_path }}">
+          </div>
+          <div class="flex justify-end gap-4">
+               <button type="submit" class="bg-blue-800 text-white font-semibold py-2 px-4 rounded-md">
+                    Save
+               </button>
+               <button type="button"
+                    class="bg-red-800 text-white font-semibold py-2 px-4 rounded-md hover:bg-red-900 transition duration-200"
+                    onclick="window.history.back();">Cancel</button>
+          </div>
+     </form>
+
+</div>
+{% endblock %}

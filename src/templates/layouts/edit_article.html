@@ -1,0 +1,49 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+<div style="height:100vh;">
+        <h1 class="text-2xl font-bold mb-4">Edit Article</h1>
+
+    <form action="{{ url_for('routes.update_article') }}" method="POST" class="w-full max-w-4x">
+        <input type="hidden" name="id" value="{{ article.id }}">
+
+        <div class="mb-4 flex items-center">
+            <label class="text-gray-700 font-bold mr-8">Title</label>
+            <input type="text" name="title" value="{{ article.title }}" required
+                   class="w-full border p-2 rounded-md">
+        </div>
+
+        <div class="mb-4 flex items-center">
+            <label class="text-gray-700 font-bold mr-8">Author</label>
+            <input type="text" name="authors" value="{{ article.authors }}" required
+                   class="w-full border p-2 rounded-md">
+        </div>
+
+        <div class="mb-4 flex items-center">
+            <label class="text-gray-700 font-bold mr-8">Affiliation</label>
+            <input type="text" name="affiliations" value="{{ article.affiliations }}" required
+                   class="w-full border p-2 rounded-md">
+        </div>
+
+        <div class="mb-4 flex items-center">
+            <label class="text-gray-700 font-bold mr-8">Intisari</label>
+            <textarea name="abstract" rows="4" required
+                      class="w-full border p-2 rounded-md">{{ article.abstract }}</textarea>
+        </div>
+
+        <div class="mb-4 flex items-center">
+            <label class="text-gray-700 font-bold mr-8">Abstract</label>
+            <textarea name="abstractEN" rows="4" required
+                      class="w-full border p-2 rounded-md">{{ article.abstractEN }}</textarea>
+        </div>
+        <div class="flex justify-end gap-4">
+            <button type="submit" class="bg-blue-800 text-white font-semibold py-2 px-4 rounded-md">
+                Save Changes
+            </button>
+            <button type="button"
+                 class="bg-red-800 text-white font-semibold py-2 px-4 rounded-md hover:bg-red-900 transition duration-200"
+                 onclick="window.history.back();">Cancel</button>
+       </div>
+    </form>
+</div>
+{% endblock %}
