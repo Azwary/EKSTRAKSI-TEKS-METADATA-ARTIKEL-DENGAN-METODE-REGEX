@@ -4,7 +4,42 @@
 {% block title %}Dashboard{% endblock %}
 
 {% block content %}
-<h2 class="text-2xl font-bold mb-6">Dashboard</h2>
+<nav class="bg-white shadow-lg mb-4">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-12">
+
+            <!-- Logo atau Branding -->
+            <div class="flex-shrink-0">
+                <h1 class="text-xl font-bold text-gray-700">Dashboard</h1>
+            </div>
+
+            <!-- Bagian kanan: Notifikasi, Pesan, Profil -->
+            <div class="flex items-center space-x-4">
+
+                <!-- User Profile Dropdown -->
+                <div class="relative">
+                    <button id="user-menu-button"
+                        class="flex items-center space-x-2 bg-white rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <!-- <i class="fas fa-book"></i> -->
+                        <span class="text-gray-700 font-medium">{{ session['role'] }}</span>
+                        <i class="fas fa-chevron-down text-gray-500 pl-1 pr-3"></i>
+                    </button>
+
+                    <!-- Dropdown Menu -->
+                    <div id="user-menu" class="hidden absolute right-0 mt-2 w-24 bg-white shadow-lg rounded-md py-2">
+                        <!-- <span class="text-gray-700 font-medium">{{ session['username'] }}</span> -->
+                        <!-- <a href="/settings" class="block px-4 py-2 text-gray-700 hover:bg-gray-200">Settings</a> -->
+                        <a href="/logout" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i
+                                class="fas fa-sign-out-alt pr-3"></i>logout</a></li></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+
+<h2 class="text-2xl font-bold mb-6"></h2>
 
 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 h-24">
     <a href="{{ url_for('routes.articles') }}" class="block text-left">
@@ -46,9 +81,21 @@
         <h3 class="text-lg font-semibold">INDEKS PRESTASI KUMULATIF</h3>
         <p class="text-2xl font-bold">3.68</p>
         <i class="fas fa-check-circle"></i> -->
-    </div>
+</div>
 
 </div>
+<script>
+    document.getElementById("user-menu-button").addEventListener("click", function () {
+        document.getElementById("user-menu").classList.toggle("hidden");
+    });
+
+    // Klik di luar dropdown untuk menutup
+    window.addEventListener("click", function (e) {
+        if (!document.getElementById("user-menu-button").contains(e.target)) {
+            document.getElementById("user-menu").classList.add("hidden");
+        }
+    });
+</script>
 <script>
     fetch('/total-articles')
         .then(response => response.json())

@@ -2,17 +2,62 @@
 {% block content %}
 
 <body>
-    <h1 class="text-2xl font-bold mb-4">Users</h1>
-    <a href="{{ url_for('routes.add_user') }}" class="mb-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+    <nav class="bg-white shadow-lg mb-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-12">
+
+                <!-- Logo atau Branding -->
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-gray-700">Users</h1>
+                </div>
+
+                <!-- Bagian kanan: Notifikasi, Pesan, Profil -->
+                <div class="flex items-center space-x-4">
+
+                    <!-- User Profile Dropdown -->
+                    <div class="relative">
+                        <button id="user-menu-button"
+                            class="flex items-center space-x-2 bg-white rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            <!-- <i class="fas fa-book"></i> -->
+                            <span class="text-gray-700 font-medium">{{ session['role'] }}</span>
+                            <i class="fas fa-chevron-down text-gray-500 pl-1 pr-3"></i>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div id="user-menu"
+                            class="hidden absolute right-0 mt-2 w-24 bg-white shadow-lg rounded-md py-2">
+                            <!-- <span class="text-gray-700 font-medium">{{ session['username'] }}</span> -->
+                            <!-- <a href="/settings" class="block px-4 py-2 text-gray-700 hover:bg-gray-200">Settings</a> -->
+                            <a href="/logout" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i
+                                    class="fas fa-sign-out-alt pr-3"></i>logout</a></li></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- <h1 class="text-2xl font-bold mb-4"></h1> -->
+    <button class="proses mb-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        onclick="location.href='/adduser';">Add New User</button>
+    <!-- <a href="{{ url_for('routes.add_user') }}"
+        class="proses mb-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
         Add New User
-    </a>
+    </a> -->
 
     <table class="min-w-full border-collapse border border-gray-200 mb-4">
         <thead>
             <tr>
                 <th class="border border-gray-300 px-4 py-2">ID</th>
-                <th class="border border-gray-300 px-4 py-2">Username</th>
+                <th class="border border-gray-300 px-4 py-2">Nama</th>
+                <th class="border border-gray-300 px-4 py-2">Email</th>
+                <th class="border border-gray-300 px-4 py-2">Afiliasi</th>
+                <th class="border border-gray-300 px-4 py-2">ID-Scopus</th>
+                <th class="border border-gray-300 px-4 py-2">ID-Sinta</th>
+                <th class="border border-gray-300 px-4 py-2">ID-Google Scholar</th>
+                <th class="border border-gray-300 px-4 py-2">ORCID</th>
+                <th class="border border-gray-300 px-4 py-2">No-Wa</th>
                 <th class="border border-gray-300 px-4 py-2">Role</th>
+                <th class="border border-gray-300 px-4 py-2">Status</th>
                 <th class="border border-gray-300 px-4 py-2">Actions</th>
             </tr>
         </thead>
@@ -20,14 +65,46 @@
             {% for user in users %}
             <tr>
                 <td class="border border-gray-300 px-4 py-2">{{ loop.index }}</td>
-                <td class="border border-gray-300 px-4 py-2">{{ user.username }}</td>
+                <td class="border border-gray-300 px-4 py-2">{{ user.nama }}</td>
+                <td class="border border-gray-300 px-4 py-2">{{ user.email }}</td>
+                <td class="border border-gray-300 px-4 py-2">{{ user.nama_afiliasi }}</td>
+                <td class="border border-gray-300 px-4 py-2">{{ user.ID_Scopus }}</td>
+                <td class="border border-gray-300 px-4 py-2">{{ user.ID_Sinta }}</td>
+                <td class="border border-gray-300 px-4 py-2">{{ user.ID_GoogleScholar }}</td>
+                <td class="border border-gray-300 px-4 py-2">{{ user.ORCID }}</td>
+                <td class="border border-gray-300 px-4 py-2">{{ user.NoWa }}</td>
                 <td class="border border-gray-300 px-4 py-2">{{ user.role }}</td>
-                <td class="border border-gray-300 px-4 py-2">
-                    <a href="{{ url_for('routes.edit_user', user_id=user.id) }}"
-                       class="edit-user-button bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded">Edit</a>
-                    <form method="POST" action="{{ url_for('routes.delete_user', user_id=user.id) }}" style="display:inline;">
+                <td class="border border-gray-300 px-4 py-2 text-center">
+                    {% if user.status == 'tidak' %}
+                    <form method="POST" action="{{ url_for('routes.update_status', user_id=user.id, status='aktif') }}"
+                        onsubmit="return confirm('Apakah Anda yakin ingin mengubah status menjadi aktif?');">
                         <button type="submit"
-                                class="delete-user-button bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded">
+                            class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded">
+                            {{ user.status }}
+                        </button>
+                    </form>
+                    {% elif user.status == 'aktif' %}
+                    <form method="POST" action="{{ url_for('routes.update_status', user_id=user.id, status='tidak') }}"
+                        onsubmit="return confirm('Apakah Anda yakin ingin mengubah status menjadi tidak aktif?');">
+                        <button type="submit"
+                            class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded">
+                            {{ user.status }}
+                        </button>
+                    </form>
+                    {% else %}
+                    <span class="text-gray-500">
+                        {{ user.status }}
+                    </span>
+                    {% endif %}
+                </td>
+
+                <td class="flex gap-1 justify-center items-center borderborder-gray-300 px-4 py-2">
+                    <a href="{{ url_for('routes.edit_user', user_id=user.id) }}"
+                        class="edit-user-button bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded">Edit</a>
+                    <form method="POST" action="{{ url_for('routes.delete_user', user_id=user.id) }}"
+                        style="display:inline;">
+                        <button type="submit"
+                            class="delete-user-button bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded">
                             Delete
                         </button>
                     </form>
@@ -39,9 +116,20 @@
             </tr>
             {% endfor %}
         </tbody>
-        
-    </table>
 
+    </table>
+    <script>
+        document.getElementById("user-menu-button").addEventListener("click", function () {
+            document.getElementById("user-menu").classList.toggle("hidden");
+        });
+
+        // Klik di luar dropdown untuk menutup
+        window.addEventListener("click", function (e) {
+            if (!document.getElementById("user-menu-button").contains(e.target)) {
+                document.getElementById("user-menu").classList.add("hidden");
+            }
+        });
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.delete-user-button').forEach(button => {

@@ -4,7 +4,7 @@ from flask import Blueprint, render_template, request, redirect, session, url_fo
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from model.regex import extract_text_from_pdf, clean, extract_metadata
-from database import Error, create_connection, save_metadata, get_all_metadata, get_all_users, get_total_articles, get_total_users, get_roles, get_all_users
+from database import Error, create_connection, save_metadata, get_all_metadata, get_all_users, get_total_articles, get_total_users, get_roles, get_all_users, update_user_status
 
 # Define the UPLOAD_FOLDER
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
@@ -24,11 +24,15 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-def role_required(role):
+def role_required(roles):
+    """Dekorator untuk membatasi akses berdasarkan peran pengguna."""
+    if isinstance(roles, str):  # Jika hanya satu peran, ubah menjadi tuple
+        roles = (roles,)
+
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            if 'role' not in session or session['role'] != role:
+            if session.get('role') not in roles:
                 flash("Anda tidak memiliki akses ke halaman ini.", "error")
                 return render_template("layouts/error.html", message="Anda tidak memiliki akses ke halaman ini.")
             return f(*args, **kwargs)
@@ -46,14 +50,24 @@ def error():
 @routes.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
+        nama = request.form['nama']
         username = request.form['username']
         password = request.form['password']
         confirm_password = request.form['confirm_password']
+        email = request.form['email']
+        nama_afiliasi = request.form['nama_afiliasi']
+        ID_Scopus = request.form['ID_Scopus']
+        ID_Sinta = request.form['ID_Sinta']
+        ID_GoogleScholar = request.form['ID_GoogleScholar']
+        NoWa = request.form['NoWa']
+        ORCID = request.form['ORCID']
 
+        # Validate password confirmation
         if password != confirm_password:
             flash("Password dan konfirmasi password tidak cocok", "error")
             return redirect(url_for('routes.register'))
 
+        # Hash the password
         hashed_password = generate_password_hash(password)
 
         connection = create_connection()
@@ -62,8 +76,8 @@ def register():
 
         try:
             cursor = connection.cursor()
-            query = "INSERT INTO users (username, password, role) VALUES (%s, %s, 'Editor')"
-            cursor.execute(query, (username, hashed_password))
+            query = "INSERT INTO users (nama, username, password, role, email, nama_afiliasi, ID_Scopus, ID_Sinta, ID_GoogleScholar, NoWa, ORCID, status) VALUES (%s, %s, %s, 'Editor', %s, %s, %s, %s, %s, %s, %s, 'tidak')"
+            cursor.execute(query, (nama, username, hashed_password, email, nama_afiliasi, ID_Scopus, ID_Sinta, ID_GoogleScholar, NoWa, ORCID))
             connection.commit()
             flash("Registrasi berhasil! Silakan login.", "success")
             return redirect(url_for('routes.login'))  
@@ -86,8 +100,13 @@ def login():
 
         user = get_user_by_username(username)
         if user:
+            if user['status'] != 'aktif': 
+                flash("Akun Anda tidak aktif. Hubungi admin untuk mengaktifkan akun.", "error")
+                return redirect(url_for('routes.login'))
+
             if check_password_hash(user['password'], password):
                 session['user_id'] = user['id']
+                session['nama'] = user['nama']
                 session['username'] = user['username']
                 session['role'] = user['role']
                 
@@ -96,6 +115,7 @@ def login():
 
         flash("Username atau password salah", "error")
     return render_template('auth/login.html')
+
 
 
 def get_user_by_username(username):
@@ -154,13 +174,14 @@ def total_users():
 
 @routes.route('/articles', methods=['GET'])
 @login_required
+@role_required(('Editor', 'Manager', 'Chief-Editor'))
 def articles():
     metadata = get_all_metadata()
     return render_template('layouts/articles.html', articles=metadata)
 
 @routes.route('/upload', methods=['GET', 'POST'])
 @login_required
-@role_required('Editor')
+@role_required(('Editor', 'Manager', 'Chief-Editor'))
 def upload_file():
     if request.method == 'POST':
         if 'file' not in request.files:
@@ -185,13 +206,13 @@ def download_file(filename):
     file_path = os.path.join(PDF_FOLDER, filename)
 
     if not os.path.exists(file_path):
-        abort(404, description="File tidak ditemukan")
+        return jsonify({"error": "File tidak ditemukan"}), 404  # Mengembalikan status 404
 
     return send_from_directory(PDF_FOLDER, filename, as_attachment=True)
 
 @routes.route('/results', methods=['POST'])
 @login_required
-@role_required('Editor')
+@role_required(('Editor', 'Manager', 'Chief-Editor'))
 def results():
     action = request.form.get('action')
 
@@ -239,7 +260,7 @@ def results():
 
 @routes.route('/edit', methods=['GET', 'POST'])
 @login_required
-@role_required('Editor')
+@role_required(('Editor', 'Manager', 'Chief-Editor'))
 def edit_metadata():
     if request.method == 'POST':
         metadata = {
@@ -258,7 +279,7 @@ def edit_metadata():
 
 @routes.route('/save', methods=['POST'])
 @login_required
-@role_required('Editor')
+@role_required(('Editor', 'Manager', 'Chief-Editor'))
 def save_metadata():
     try:
         connection = create_connection()
@@ -291,6 +312,7 @@ def save_metadata():
 
 @routes.route('/edit/<int:article_id>', methods=['GET'])
 @login_required
+@role_required(('Editor', 'Manager', 'Chief-Editor'))
 def edit_article(article_id):
     """Menampilkan halaman edit artikel berdasarkan ID."""
     connection = create_connection()
@@ -312,6 +334,7 @@ def edit_article(article_id):
 
 @routes.route('/update_article', methods=['POST'])
 @login_required
+@role_required(('Editor', 'Manager', 'Chief-Editor'))
 def update_article():
     """Mengupdate data artikel di database."""
     article_id = request.form['id']
@@ -341,28 +364,25 @@ def update_article():
             cursor.close()
             connection.close()
 
-@routes.route("/delete/<int:article_id>", methods=["DELETE"])
+@routes.route("/delete/<int:article_id>", methods=["POST"])
 @login_required
-@role_required('Editor')
+@role_required(('Editor', 'Manager', 'Chief-Editor'))
 def delete_article(article_id):
     try:
         conn = create_connection()
         cursor = conn.cursor()
 
-        # Cek apakah artikel ada di database
         cursor.execute("SELECT filename, file_path FROM articles WHERE id = %s", (article_id,))
         article = cursor.fetchone()
 
         if not article:
-            return jsonify({"error": "Artikel berhasil dihapus"}), 200
+            return jsonify({"error": "Artikel tidak ditemukan"}), 404
 
         filename, file_path = article
 
-        # Hapus file dari direktori jika ada
         if os.path.exists(file_path):
             os.remove(file_path)
 
-        # Hapus data dari database
         cursor.execute("DELETE FROM articles WHERE id = %s", (article_id,))
         conn.commit()
 
@@ -373,12 +393,12 @@ def delete_article(article_id):
 
     finally:
         cursor.close()
-        conn.close() 
+        conn.close()
 
 
 @routes.route('/users', methods=['GET'])
 @login_required
-@role_required('Chief-Editor')
+@role_required(('Manager', 'Chief-Editor'))
 def users():
     """Menampilkan daftar pengguna dari database."""
     users = get_all_users()
@@ -386,7 +406,7 @@ def users():
 
 @routes.route('/adduser', methods=['GET', 'POST'])
 @login_required
-@role_required('Chief-Editor')
+@role_required(('Manager,Chief-Editor'))
 def add_user():
     """Menambahkan pengguna baru ke dalam database."""
     roles = ['Chief-Editor', 'Manager', 'Editor']
@@ -421,7 +441,7 @@ def add_user():
 
 @routes.route('/edit_user/<int:user_id>', methods=['GET', 'POST'])
 @login_required
-@role_required('Chief-Editor')
+@role_required(('Manager', 'Chief-Editor'))
 def edit_user(user_id):
     connection = create_connection()
     if connection is None:
@@ -456,9 +476,23 @@ def edit_user(user_id):
             cursor.close()
             connection.close()
 
+@routes.route('/update-status/<int:user_id>/<status>', methods=['POST'])
+@login_required
+@role_required(('Manager', 'Chief-Editor'))
+def update_status(user_id, status):
+    if status not in ["aktif", "tidak"]:
+        return "Status tidak valid", 400  
+
+    success = update_user_status(user_id, status)
+    if success:
+        return redirect(url_for('routes.users'))
+    else:
+        return "Gagal memperbarui status", 500
+
+
 @routes.route('/delete_user/<int:user_id>', methods=['POST'])
 @login_required
-@role_required('Chief-Editor')
+@role_required(('Manager', 'Chief-Editor'))
 def delete_user(user_id):
     """Menghapus pengguna berdasarkan ID."""
     connection = create_connection()

@@ -154,7 +154,7 @@ def get_all_users():
 
     try:
         cursor = connection.cursor(dictionary=True)  # Ensure dictionary=True is set
-        cursor.execute("SELECT id, username, role FROM users")
+        cursor.execute("SELECT * FROM users")
         users = cursor.fetchall()  # This will now return a list of dictionaries
         return users
     except Error as e:
@@ -164,3 +164,14 @@ def get_all_users():
         if connection.is_connected():
             cursor.close()
             connection.close()
+
+def update_user_status(user_id, new_status):
+    connection = create_connection()
+    cursor = connection.cursor()
+    try:
+        cursor.execute("UPDATE users SET status = %s WHERE id = %s", (new_status, user_id))
+        connection.commit()
+        return cursor.rowcount > 0
+    finally:
+        cursor.close()
+        connection.close()
