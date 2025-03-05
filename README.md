@@ -6,7 +6,7 @@
 
 
 
-pengelompokan metadata artikel berdasarkan kebutuhan, berdasarkan study kasus di `Teknoif`.
+pengelompokan metadata artikel berdasarkan kebutuhan di `Teknoif`.
 > ###### _Metadata bisa dihasilkan secara otomatis dari dokumen, sehingga mempercepat proses pengelolaan dan pencarian informasi yang relevan di `Teknoif`. Penggunaan ReGex untuk mengenali pola yang dapat digunakan untuk mendeskripsikan pola dari kata yang ingin dicari **\*Note:** kebuthan teknoif `Title, Author, Affiliation, dan abstract `._
 
 ## library
