@@ -5,15 +5,15 @@
     <nav class="bg-white shadow-lg mb-4">
         <div class="max-w-7xl mx-auto">
             <div class="flex justify-between items-center h-12">
-    
+
                 <!-- Logo atau Branding -->
                 <div class="flex-shrink-0 border-b border-black">
                     <h1 class="text-xl font-bold ">Article</h1>
                 </div>
-    
+
                 <!-- Bagian kanan: Notifikasi, Pesan, Profil -->
                 <div class="flex items-center space-x-4">
-    
+
                     <!-- User Profile Dropdown -->
                     <div class="relative">
                         <button id="user-menu-button"
@@ -22,9 +22,10 @@
                             <span class="text-gray-700 font-medium">{{ session['role'] }}</span>
                             <i class="fas fa-chevron-down text-gray-500 pl-1 pr-3"></i>
                         </button>
-    
+
                         <!-- Dropdown Menu -->
-                        <div id="user-menu" class="hidden absolute right-0 mt-2 w-24 bg-white shadow-lg rounded-md py-2">
+                        <div id="user-menu"
+                            class="hidden absolute right-0 mt-2 w-24 bg-white shadow-lg rounded-md py-2">
                             <!-- <span class="text-gray-700 font-medium">{{ session['username'] }}</span> -->
                             <!-- <a href="/settings" class="block px-4 py-2 text-gray-700 hover:bg-gray-200">Settings</a> -->
                             <a href="/logout" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i
@@ -60,7 +61,8 @@
             {% if articles %}
             {% for item in articles %}
             <tr class="border">
-                <td class="border px-4 py-2 text-center">{{ loop.index }}</td>
+                <td class="border px-4 py-2 text-center">{{ (current_page - 1) * 7 + loop.index }}</td>
+
                 <td class="border px-4 py-2 text-center">{{ item.title }}</td>
                 <td class="border px-4 py-2 text-center">
                     <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded"
@@ -91,9 +93,40 @@
             <tr>
                 <td colspan="8" class="text-center py-4 text-gray-600">No articles available</td>
             </tr>
+
             {% endif %}
         </tbody>
     </table>
+
+    <div class="flex justify-end mt-4 space-x-2">
+        <!-- Tombol Previous -->
+        {% if current_page > 1 %}
+        <a href="{{ url_for('routes.articles', page=current_page - 1) }}"
+            class="px-3 py-1 bg-gray-300 text-black rounded hover:bg-gray-400">Previous</a>
+        {% endif %}
+
+        <!-- Tombol Nomor Halaman -->
+        {% for p in range(1, total_pages + 1) %}
+        {% if p >= current_page - 2 and p <= current_page + 2 %} <a href="{{ url_for('routes.articles', page=p) }}"
+            class="px-3 py-1 rounded 
+                          {% if current_page == p %}
+                          bg-blue-600 text-white 
+                          {% else %}
+                          bg-gray-200 text-gray-800 
+                          {% endif %}">
+            {{ p }}
+            </a>
+            {% endif %}
+            {% endfor %}
+
+            <!-- Tombol Next -->
+            {% if current_page < total_pages %} <a href="{{ url_for('routes.articles', page=current_page + 1) }}"
+                class="px-3 py-1 bg-gray-300 text-black rounded hover:bg-gray-400">Next</a>
+                {% endif %}
+    </div>
+
+
+
 
     <div id="modal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
         <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
@@ -150,11 +183,11 @@
                     return response.json();
                 })
                 .then(data => {
-                    alert(data.message);  
-                    location.reload();    
+                    alert(data.message);
+                    location.reload();
                 })
                 .catch(error => {
-                    alert(error.message); 
+                    alert(error.message);
                 });
         }
 
@@ -179,10 +212,10 @@
                     a.remove();
                 })
                 .catch(error => {
-                    alert(error.message || "An error occurred");  
+                    alert(error.message || "An error occurred");
                 });
         }
 
-    </script>
-</body>
-{% endblock %}
+    </script>   
+    </body>
+    {% endblock %}

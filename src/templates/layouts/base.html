@@ -8,27 +8,88 @@
     <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+
+
     <title>Jurnal Arsip | Teknoif</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 </head>
 
-<body class="flex text-xs">
+
+<body class="flex text-xs" style="height:100vh;">
 
 
     {% include 'components/header.html' %}
 
     <div class="content flex-1 p-6">
-        <div style="height:100vh;">
-
-            <div class="p-4">
+        <div >
+            <div class=" p-4">
                 {% block content %}{% endblock %}
             </div>
-            <!-- <div class="-mt-11 text-center"> -->
+            <div class="-mt-11 text-center">
                 {% include 'components/footer.html' %}
-            <!-- </div> -->
+            </div>
         </div>
     </div>
 
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
+    
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("downloadPdf")?.addEventListener("click", function () {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
+    
+            const logoLeft = "{{ url_for('static', filename='img/logo-left.png') }}";
+            const logoRight = "{{ url_for('static', filename='img/logo-right.png') }}";
+    
+            pdf.addImage(logoLeft, 'PNG', 10, 10, 25, 25);
+            pdf.addImage(logoRight, 'PNG', 170, 10, 25, 25);
+    
+            pdf.setFontSize(16);
+            pdf.setTextColor(0, 0, 0);
+            pdf.text("Laporan Metadata Artikel", 105, 25, { align: "center" });
+            pdf.setFontSize(14);
+            pdf.text("Jurnal TeknoIF", 105, 35, { align: "center" });
+    
+            // Ambil data dari tabel
+            const tableData = Array.from(document.querySelectorAll("#tableBody tr")).map(row => {
+                const cells = Array.from(row.querySelectorAll("td"));
+                return [cells[0]?.innerText || '', cells[2]?.innerText || '', cells[3]?.innerText || ''];
+            });
+    
+            pdf.autoTable({
+                head: [["Title", "Affiliation", "Author"]],
+                body: tableData,
+                startY: 50,
+                theme: 'grid',
+                styles: { halign: 'center', textColor: [0, 0, 0] },
+                headStyles: { fillColor: [180, 180, 180], textColor: [0, 0, 0] }
+            });
+    
+            const finalY = pdf.lastAutoTable.finalY + 10;
+            pdf.setFontSize(12);
+            pdf.setTextColor(0, 0, 0);
+            pdf.text("Jurnal TeknoIF", 180, finalY + 10, { align: "right" });
+            pdf.text(new Date().toLocaleDateString(), 180, finalY + 20, { align: "right" });
+    
+            const now = new Date();
+            const timestamp = now.getFullYear().toString() +
+                String(now.getMonth() + 1).padStart(2, '0') +
+                String(now.getDate()).padStart(2, '0') + "_" +
+                String(now.getHours()).padStart(2, '0') +
+                String(now.getMinutes()).padStart(2, '0') +
+                String(now.getSeconds()).padStart(2, '0');
+    
+            const filename = `${timestamp}_laporanMetadata.pdf`;
+    
+            pdf.save(filename);
+        });
+    });
+    </script>
+    
 
 </body>
 

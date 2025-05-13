@@ -1,10 +1,16 @@
 import os
 from functools import wraps
 from flask import Blueprint, render_template, request, redirect, session, url_for, flash, jsonify, send_from_directory, abort
+from PyPDF2.errors import PdfReadError
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from model.regex import extract_text_from_pdf, clean, extract_metadata
 from database import Error, create_connection, save_metadata, get_all_metadata, get_all_users, get_total_articles, get_total_users, get_roles, get_all_users, update_user_status
+
+ALLOWED_EXTENSIONS = {'pdf'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Define the UPLOAD_FOLDER
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
@@ -177,28 +183,55 @@ def total_users():
 @role_required(('Editor', 'Manager', 'Chief-Editor'))
 def articles():
     metadata = get_all_metadata()
-    return render_template('layouts/articles.html', articles=metadata)
+    page = request.args.get('page', 1, type=int)
+    per_page = 8
+    start = (page - 1) * per_page
+    end = start + per_page
+
+    paginated_data = metadata[start:end]
+    total_pages = (len(metadata) + per_page - 1) // per_page
+
+    return render_template('layouts/articles.html', 
+                           articles=paginated_data,
+                           current_page=page,
+                           total_pages=total_pages)
+
+# @routes.route('/articles', methods=['GET'])
+# @login_required
+# @role_required(('Editor', 'Manager', 'Chief-Editor'))
+# def articles():
+#     metadata = get_all_metadata()
+#     return render_template('layouts/articles.html', articles=metadata)
 
 @routes.route('/upload', methods=['GET', 'POST'])
 @login_required
-@role_required(('Editor', 'Manager', 'Chief-Editor'))
 def upload_file():
+    error_message = None
+    success_message = None
+    
     if request.method == 'POST':
         if 'file' not in request.files:
-            return 'No file part'
-        file = request.files['file']
-        if file.filename == '':
-            return 'No selected file'
-        if file:
-            filename = secure_filename(file.filename)
-            file_path = os.path.join(UPLOAD_FOLDER, filename)
-            file.save(file_path)  
-            text = extract_text_from_pdf(file_path)
-            cleaned_text = clean(text) 
-            metadata = extract_metadata(cleaned_text)  
-            # save_metadata(metadata)  # Save metadata to the database
-            return render_template('layouts/result.html', metadata=metadata, filename=filename, file_path=file_path)
-    return render_template('layouts/upload.html')
+            error_message = 'Tidak ada file yang dipilih.'
+        else:
+            file = request.files['file']
+            if file.filename == '':
+                error_message = 'Tidak ada file yang dipilih.'
+            elif file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                file_path = os.path.join(UPLOAD_FOLDER, filename)
+                file.save(file_path)
+                try:
+                    text = extract_text_from_pdf(file_path)
+                    cleaned_text = clean(text)
+                    metadata = extract_metadata(cleaned_text)
+                    return render_template('layouts/result.html', metadata=metadata, filename=filename, file_path=file_path)
+                except PdfReadError:
+                    error_message = 'Format tidak didukung atau file PDF rusak.'
+            else:
+                error_message = 'Format tidak didukung. Harap unggah file PDF.'
+    
+    return render_template('layouts/upload.html', error_message=error_message, success_message=success_message)
+
 
 @routes.route("/download/<filename>")
 def download_file(filename):
