@@ -443,12 +443,27 @@ def users():
 @login_required
 @role_required(('Manager', 'Chief-Editor'))
 def add_user():
-    """Menambahkan pengguna baru ke dalam database."""
-    roles = ['Chief-Editor', 'Manager', 'Editor']
+
+    roles = ['Editor', 'Manager', 'Chief-Editor']
+    
     if request.method == 'POST':
+        nama = request.form['nama']
         username = request.form['username']
-        role = request.form['role']
         password = request.form['password']
+        confirm_password = request.form['confirm_password']
+        role = request.form['role']
+        email = request.form['email']
+        nama_afiliasi = request.form.get('nama_afiliasi')
+        ID_Scopus = request.form.get('ID_Scopus')
+        ID_Sinta = request.form.get('ID_Sinta')
+        ID_GoogleScholar = request.form.get('ID_GoogleScholar')
+        NoWa = request.form.get('NoWa')
+        ORCID = request.form.get('ORCID')
+
+        # Validasi password dan konfirmasi
+        if password != confirm_password:
+            flash("Password dan konfirmasi password tidak cocok", "error")
+            return redirect(url_for('routes.add_user'))
 
         hashed_password = generate_password_hash(password)
 
@@ -459,8 +474,17 @@ def add_user():
 
         try:
             cursor = connection.cursor()
-            query = "INSERT INTO users (username, role, password) VALUES (%s, %s, %s)"
-            cursor.execute(query, (username, role, hashed_password))
+            query = """
+                INSERT INTO users (
+                    nama, username, password, role, email, nama_afiliasi, 
+                    ID_Scopus, ID_Sinta, ID_GoogleScholar, NoWa, ORCID
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """
+            values = (
+                nama, username, hashed_password, role, email, nama_afiliasi,
+                ID_Scopus, ID_Sinta, ID_GoogleScholar, NoWa, ORCID
+            )
+            cursor.execute(query, values)
             connection.commit()
             flash("User added successfully", "success")
         except Exception as e:
@@ -472,7 +496,9 @@ def add_user():
 
         return redirect(url_for('routes.users'))
 
-    return render_template('layouts/adduser.html', roles=roles)  
+    return render_template('layouts/adduser.html', roles=roles)
+
+
 
 @routes.route('/edit_user/<int:user_id>', methods=['GET', 'POST'])
 @login_required
@@ -486,17 +512,60 @@ def edit_user(user_id):
         cursor = connection.cursor(dictionary=True)
 
         if request.method == 'POST':
+            nama = request.form['nama']
             username = request.form['username']
             role = request.form['role']
-            
-            query_update = "UPDATE users SET username = %s, role = %s WHERE id = %s"
-            cursor.execute(query_update, (username, role, user_id))
+            email = request.form['email']
+            nama_afiliasi = request.form.get('nama_afiliasi')
+            ID_Scopus = request.form.get('ID_Scopus')
+            ID_Sinta = request.form.get('ID_Sinta')
+            ID_GoogleScholar = request.form.get('ID_GoogleScholar')
+            NoWa = request.form.get('NoWa')
+            ORCID = request.form.get('ORCID')
+            password = request.form.get('password')
+            confirm_password = request.form.get('confirm_password')
+
+            update_fields = """
+                nama = %s,
+                username = %s,
+                role = %s,
+                email = %s,
+                nama_afiliasi = %s,
+                ID_Scopus = %s,
+                ID_Sinta = %s,
+                ID_GoogleScholar = %s,
+                NoWa = %s,
+                ORCID = %s
+            """
+            values = [
+                nama, username, role, email, nama_afiliasi,
+                ID_Scopus, ID_Sinta, ID_GoogleScholar, NoWa, ORCID
+            ]
+
+            # Jika password diisi dan cocok, tambahkan ke update
+            if password:
+                if password != confirm_password:
+                    flash("Password dan konfirmasi tidak cocok!", "error")
+                    return redirect(url_for('routes.edit_user', user_id=user_id))
+                hashed_password = generate_password_hash(password)
+                update_fields += ", password = %s"
+                values.append(hashed_password)
+
+            values.append(user_id)
+            query_update = f"UPDATE users SET {update_fields} WHERE id = %s"
+            cursor.execute(query_update, values)
             connection.commit()
+            flash("User updated successfully", "success")
             return redirect(url_for('routes.users'))
 
+        # GET Method – Ambil data user & role
         cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
         user = cursor.fetchone()
-        
+        if not user:
+            flash("User not found", "error")
+            return redirect(url_for('routes.users'))
+
+        # Ambil enum values dari kolom 'role'
         cursor.execute("SHOW COLUMNS FROM users LIKE 'role'")
         role_data = cursor.fetchone()
         enum_values = role_data['Type'].replace("enum(", "").replace(")", "").replace("'", "").split(",")
@@ -505,7 +574,8 @@ def edit_user(user_id):
 
     except Exception as e:
         print(f"Error: {e}")
-        return "Failed to fetch user data", 500
+        flash("Terjadi kesalahan saat mengupdate user", "error")
+        return redirect(url_for('routes.users'))
     finally:
         if connection.is_connected():
             cursor.close()
@@ -515,7 +585,7 @@ def edit_user(user_id):
 @login_required
 @role_required(('Manager', 'Chief-Editor'))
 def update_status(user_id, status):
-    if status not in ["aktif", "tidak"]:
+    if status not in ["aktif", "nonaktif"]:
         return "Status tidak valid", 400  
 
     success = update_user_status(user_id, status)

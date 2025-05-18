@@ -68,14 +68,18 @@
                 <td class="border border-gray-300 px-4 py-2">{{ user.ID_Sinta }}</td>
                 <td class="border border-gray-300 px-4 py-2">{{ user.ID_GoogleScholar }}</td>
                 <td class="border border-gray-300 px-4 py-2">{{ user.ORCID }}</td>
-                <td class="border border-gray-300 px-4 py-2  text-center">
-                    {{ user.NoWa }} 
+                <td class="border border-gray-300 px-4 py-2 text-center">
+                    {% set no_wa = user.NoWa %}
+                    {{ no_wa[:4] }} {{ no_wa[4:8] }} {{ no_wa[8:] }}
                     <span>
-                        <a href="https://wa.me/{{ user.NoWa }}" target="_blank"  rel="noopener noreferrer" class="text-blue-500 hover:text-blue-700" >
-                            <img src="https://img.icons8.com/color/48/000000/whatsapp--v1.png" alt="WhatsApp" class="inline-block w-6 h-6 ml-2">
+                        <a href="https://wa.me/{{ user.NoWa }}" target="_blank" rel="noopener noreferrer"
+                            class="text-blue-500 hover:text-blue-700">
+                            <img src="https://img.icons8.com/color/48/000000/whatsapp--v1.png" alt="WhatsApp"
+                                class="inline-block w-6 h-6 ml-2">
                         </a>
                     </span>
                 </td>
+
                 <td class="border border-gray-300 px-4 py-2">{{ user.role }}</td>
                 <td class="border border-gray-300 px-4 py-2 text-center">
                     {% if user.status == 'nonaktif' %}
@@ -87,8 +91,9 @@
                         </button>
                     </form>
                     {% elif user.status == 'aktif' %}
-                    <form method="POST" action="{{ url_for('routes.update_status', user_id=user.id, status='nonaktif') }}"
-                        onsubmit="return confirm('Apakah Anda yakin ingin mengubah status menjadi tidak aktif?');">
+                    <form method="POST"
+                        action="{{ url_for('routes.update_status', user_id=user.id, status='nonaktif') }}"
+                        onsubmit="return confirm('Apakah Anda yakin ingin mengubah status menjadi nonaktif?');">
                         <button type="submit"
                             class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded">
                             {{ user.status }}
