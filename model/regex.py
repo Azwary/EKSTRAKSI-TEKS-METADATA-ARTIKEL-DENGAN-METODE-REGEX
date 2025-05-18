@@ -23,8 +23,8 @@ def extract_metadata(text):
     if not isinstance(text, str):
         return {
             "Ftitle": None,
-            "authors": [],
-            "affiliations": [],
+            "author": [],
+            "affiliation": [],
             "abstract": None
         }
 
@@ -34,16 +34,16 @@ def extract_metadata(text):
     else:
         Ftitle = None
 
-    # Extract authors
+    # Extract author
     matches = re.findall(r'\s{2,}(.+)', text, flags=re.DOTALL)
     cleaned_text = "\n".join(matches)
 
-    authors = re.findall(r'([A-Za-z\s]+?)\d+\)', cleaned_text)
-    authors = [author.strip() for author in authors if author.strip().lower() not in ['com', 'id']]  # Menghapus 'com' dan 'id'
+    author = re.findall(r'([A-Za-z\s]+?)\d+\)', cleaned_text)
+    author = [author.strip() for author in author if author.strip().lower() not in ['com', 'id']]  # Menghapus 'com' dan 'id'
 
-    # Extract affiliations
-    affiliations = re.findall(r'\d+((?:Universitas|Institut|Politeknik)\s+[A-Z][a-zA-Z\s.]*)(?=\s|e-mail|$)', text)
-    affiliations = [affil.strip() for affil in affiliations if affil.strip().lower() ] # '' != 'jurusan'
+    # Extract affiliation
+    affiliation = re.findall(r'\d+((?:Universitas|Institut|Politeknik)\s+[A-Z][a-zA-Z\s.]*)(?=\s|e-mail|$)', text)
+    affiliation = [affil.strip() for affil in affiliation if affil.strip().lower() ] # '' != 'jurusan'
 
     # Ekstraksi abstrak EN
     abstract_matchEN = re.search(r'(?<=Abstract\s)(.*?)(?=\s*Keywords|$)', text, re.IGNORECASE | re.DOTALL)
@@ -56,8 +56,8 @@ def extract_metadata(text):
 
     return {
         "Ftitle": Ftitle,
-        "authors": authors,
-        "affiliations": affiliations,
+        "author": author,
+        "affiliation": affiliation,
         "abstractEN": abstractEN,
         "abstract": abstract
     }

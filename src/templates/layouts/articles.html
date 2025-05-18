@@ -68,8 +68,8 @@
                     <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded"
                         onclick="downloadFile('{{ item.filename }}')">PDF</button>
                 </td>
-                <td class="border px-4 py-2 text-center">{{ item.authors }}</td>
-                <td class="border px-4 py-2 text-center">{{ item.affiliations }}</td>
+                <td class="border px-4 py-2 text-center">{{ item.author }}</td>
+                <td class="border px-4 py-2 text-center">{{ item.affiliation }}</td>
                 <td class="border px-4 py-2">
                     <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded"
                         onclick="openModal('{{ item.abstract }}', 'Intisari')">More</button>
@@ -129,9 +129,9 @@
 
 
     <div id="modal" class="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center hidden">
-        <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full">
-            <h2 id="modalTitle" class="text-xl font-semibold mb-4">Title</h2>
-            <p id="modalContent" class="text-gray-700 mb-4">Content goes here...</p>
+        <div class="bg-white p-6 rounded-lg shadow-lg max-w-lg w-full" >
+            <h2 id="modalTitle" class="text-center text-xl font-semibold mb-4">Title</h2>
+            <p id="modalContent" class="text-justify text-gray-700 mb-4" >Content goes here...</p>
             <button onclick="closeModal()"
                 class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded w-full">Close</button>
         </div>

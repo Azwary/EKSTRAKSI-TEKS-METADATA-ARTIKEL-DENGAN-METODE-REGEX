@@ -8,12 +8,12 @@
      <p class="pl-5 font-semibold mb-4">{{ metadata.Ftitle }}</p>
 
      <p class="font-bold mt-4">Author's Name:</p>
-     {% for author in metadata. authors %}
+     {% for author in metadata. author %}
      <p class="pl-5 font-semibold">{{ loop.index }}. {{ author }}</p>
      {% endfor %}
 
      <p class="font-bold mt-4">Affiliation:</p>
-     {% for affiliation in metadata. affiliations %}
+     {% for affiliation in metadata. affiliation %}
      <p class="pl-5 font-semibold">{{ loop.index }}. {{ affiliation }}</p>
      {% endfor %}
 
@@ -26,8 +26,8 @@
 
      <form method="post" enctype="multipart/form-data" action="/results">
           <input type="hidden" name="title" value="{{ metadata.Ftitle }}">
-          <input type="hidden" name="authors" value="{{ metadata.authors|join(', ') }}">
-          <input type="hidden" name="affiliations" value="{{ metadata.affiliations|join(', ') }}">
+          <input type="hidden" name="author" value="{{ metadata.author|join(', ') }}">
+          <input type="hidden" name="affiliation" value="{{ metadata.affiliation|join(', ') }}">
           <input type="hidden" name="abstract" value="{{ metadata.abstract }}">
           <input type="hidden" name="abstractEN" value="{{ metadata.abstractEN }}">
           <input type="hidden" name="filename" value="{{ filename }}">

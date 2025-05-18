@@ -82,7 +82,7 @@ def register():
 
         try:
             cursor = connection.cursor()
-            query = "INSERT INTO users (nama, username, password, role, email, nama_afiliasi, ID_Scopus, ID_Sinta, ID_GoogleScholar, NoWa, ORCID, status) VALUES (%s, %s, %s, 'Editor', %s, %s, %s, %s, %s, %s, %s, 'tidak')"
+            query = "INSERT INTO users (nama, username, password, role, email, nama_afiliasi, ID_Scopus, ID_Sinta, ID_GoogleScholar, NoWa, ORCID, status) VALUES (%s, %s, %s, 'Editor', %s, %s, %s, %s, %s, %s, %s, 'nonaktif')"
             cursor.execute(query, (nama, username, hashed_password, email, nama_afiliasi, ID_Scopus, ID_Sinta, ID_GoogleScholar, NoWa, ORCID))
             connection.commit()
             flash("Registrasi berhasil! Silakan login.", "success")
@@ -184,7 +184,7 @@ def total_users():
 def articles():
     metadata = get_all_metadata()
     page = request.args.get('page', 1, type=int)
-    per_page = 8
+    per_page = 5
     start = (page - 1) * per_page
     end = start + per_page
 
@@ -252,8 +252,8 @@ def results():
     if action == 'edit':
         metadata = {
             "title": request.form.get("title"),
-            "authors": request.form.get("authors"),
-            "affiliations": request.form.get("affiliations"),
+            "author": request.form.get("author"),
+            "affiliation": request.form.get("affiliation"),
             "abstract": request.form.get("abstract"),
             "abstractEN": request.form.get("abstractEN"),
             "filename": request.form.get("filename"),
@@ -266,12 +266,12 @@ def results():
         if connection:
             try:
                 cursor = connection.cursor()
-                sql = """INSERT INTO articles (title, authors, affiliations, abstract, abstractEN, filename, file_path)
+                sql = """INSERT INTO articles (title, author, affiliation, abstract, abstractEN, filename, file_path)
                          VALUES (%s, %s, %s, %s, %s, %s, %s)"""
                 values = (
                     request.form.get("title"),
-                    request.form.get("authors"),
-                    request.form.get("affiliations"),
+                    request.form.get("author"),
+                    request.form.get("affiliation"),
                     request.form.get("abstract"),
                     request.form.get("abstractEN"),
                     request.form.get("filename"),
@@ -298,8 +298,8 @@ def edit_metadata():
     if request.method == 'POST':
         metadata = {
             "title": request.form.get("title"),
-            "authors": request.form.get("authors"),
-            "affiliations": request.form.get("affiliations"),
+            "author": request.form.get("author"),
+            "affiliation": request.form.get("affiliation"),
             "abstract": request.form.get("abstract"),
             "abstractEN": request.form.get("abstractEN"),
             "filename": request.form.get("filename"),
@@ -318,12 +318,12 @@ def save_metadata():
         connection = create_connection()
         if connection:
             cursor = connection.cursor()
-            sql = """INSERT INTO articles (title, authors, affiliations, abstract, abstractEN, filename, file_path)
+            sql = """INSERT INTO articles (title, author, affiliation, abstract, abstractEN, filename, file_path)
                      VALUES (%s, %s, %s, %s, %s, %s, %s)"""
             values = (
                 request.form.get("title"),
-                request.form.get("authors"),
-                request.form.get("affiliations"),
+                request.form.get("author"),
+                request.form.get("affiliation"),
                 request.form.get("abstract"),
                 request.form.get("abstractEN"),
                 request.form.get("filename"),
@@ -372,8 +372,8 @@ def update_article():
     """Mengupdate data artikel di database."""
     article_id = request.form['id']
     title = request.form['title']
-    authors = request.form['authors']
-    affiliations = request.form['affiliations']
+    author = request.form['author']
+    affiliation = request.form['affiliation']
     abstract = request.form['abstract']
     abstractEN = request.form['abstractEN']
 
@@ -384,9 +384,9 @@ def update_article():
     try:
         cursor = connection.cursor()
         query = """UPDATE articles 
-                   SET title = %s, authors = %s, affiliations = %s, abstract = %s, abstractEN = %s 
+                   SET title = %s, author = %s, affiliation = %s, abstract = %s, abstractEN = %s 
                    WHERE id = %s"""
-        cursor.execute(query, (title, authors, affiliations, abstract, abstractEN,article_id))
+        cursor.execute(query, (title, author, affiliation, abstract, abstractEN,article_id))
         connection.commit()
         return redirect(url_for('routes.articles')) 
     except Exception as e:

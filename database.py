@@ -25,7 +25,7 @@ def save_metadata(metadata):
     try:
         cursor = connection.cursor()
         query = """
-            INSERT INTO articles (id, title, author, affiliation, abstract, file_name, file_path)
+            INSERT INTO articles (id, title, author, affiliation, abstract, abstract, file_name, file_path)
             VALUES (%s, %s, %s, %s, %s, %s)
         """
         values = (
@@ -34,6 +34,7 @@ def save_metadata(metadata):
             metadata['author'],
             metadata['affiliation'], 
             metadata['abstract'],
+            metadata['abstractEN'],
             metadata['file_name'],
             metadata['file_path']
         )
