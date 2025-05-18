@@ -1,95 +1,108 @@
-<!-- src/templates/layouts/base.html -->
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-
-
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="{{ url_for('static', filename='css/output.css') }}" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
 
     <title>Jurnal Arsip | Teknoif</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
 </head>
 
-
-<body class="flex text-xs" style="height:100vh;">
-
-
+<body class="flex text-xs" style="height: 100vh">
     {% include 'components/header.html' %}
 
     <div class="content flex-1 p-6">
-        <div >
-            <div class=" p-4">
-                {% block content %}{% endblock %}
-            </div>
-            <div class="-mt-11 text-center">
-                {% include 'components/footer.html' %}
-            </div>
+        <div>
+            <div class="p-4">{% block content %}{% endblock %}</div>
+            <div class="-mt-11 text-center">{% include 'components/footer.html' %}</div>
         </div>
     </div>
 
+    <!-- Scripts -->
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.23/jspdf.plugin.autotable.min.js"></script>
-    
+
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        document.getElementById("downloadPdf")?.addEventListener("click", function () {
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF();
-    
-            const logoLeft = "{{ url_for('static', filename='img/logo-left.png') }}";
-            const logoRight = "{{ url_for('static', filename='img/logo-right.png') }}";
-    
-            pdf.addImage(logoLeft, 'PNG', 10, 10, 25, 25);
-            pdf.addImage(logoRight, 'PNG', 170, 10, 25, 25);
-    
-            pdf.setFontSize(16);
-            pdf.setTextColor(0, 0, 0);
-            pdf.text("Laporan Metadata Artikel", 105, 25, { align: "center" });
-            pdf.setFontSize(14);
-            pdf.text("Jurnal TeknoIF", 105, 35, { align: "center" });
-    
-            // Ambil data dari tabel
-            const tableData = Array.from(document.querySelectorAll("#tableBody tr")).map(row => {
-                const cells = Array.from(row.querySelectorAll("td"));
-                return [cells[0]?.innerText || '', cells[2]?.innerText || '', cells[3]?.innerText || ''];
+        document.addEventListener("DOMContentLoaded", function () {
+            const btn = document.getElementById("downloadPdf");
+            if (!btn) return;
+
+            btn.addEventListener("click", function () {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF();
+
+                // Ambil data JSON dari script tag
+                const dataScript = document.getElementById("allArticlesData");
+                if (!dataScript) {
+                    alert("Data artikel tidak ditemukan!");
+                    return;
+                }
+
+                const articles = JSON.parse(dataScript.textContent);
+                if (!articles.length) {
+                    alert("Tidak ada artikel untuk dicetak.");
+                    return;
+                }
+
+                const logoLeft = "{{ url_for('static', filename='img/logo-left.png') }}";
+                const logoRight = "{{ url_for('static', filename='img/logo-right.png') }}";
+
+                const rowsPerPage = 8;  // 7 rows per page sesuai permintaan
+                const totalPages = Math.ceil(articles.length / rowsPerPage);
+
+                for (let page = 0; page < totalPages; page++) {
+                    if (page !== 0) pdf.addPage();
+
+                    pdf.addImage(logoLeft, 'PNG', 10, 10, 25, 25);
+                    pdf.addImage(logoRight, 'PNG', 170, 10, 25, 25);
+
+                    pdf.setFontSize(16);
+                    pdf.text("Laporan Metadata Artikel", 105, 25, { align: "center" });
+                    pdf.setFontSize(14);
+                    pdf.text("Jurnal TeknoIF", 105, 35, { align: "center" });
+
+                    const pageData = articles.slice(page * rowsPerPage, (page + 1) * rowsPerPage).map((item, index) => [
+                        (page * rowsPerPage + index + 1).toString(), // No
+                        item.title || '',
+                        item.author || '',
+                        item.affiliation || ''
+                    ]);
+
+                    pdf.autoTable({
+                        head: [["No", "Title", "Author", "Affiliation"]],
+                        body: pageData,
+                        startY: 50,
+                        theme: 'grid',
+                        styles: { halign: 'center', fontSize: 10 },
+                        headStyles: { fillColor: [180, 180, 180] }
+                    });
+
+                    const finalY = pdf.lastAutoTable.finalY + 10;
+                    pdf.setFontSize(12);
+                    pdf.text("Jurnal TeknoIF", 180, finalY + 10, { align: "right" });
+
+                    // Format tanggal: 18 May 2025
+                    const now = new Date();
+                    const day = now.getDate();
+                    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                    const month = monthNames[now.getMonth()];
+                    const year = now.getFullYear();
+                    const formattedDate = `${day} ${month} ${year}`;
+
+                    pdf.text(formattedDate, 180, finalY + 20, { align: "right" });
+                }
+
+                const now = new Date();
+                const timestamp = now.toISOString().replace(/[-:T]/g, '').split('.')[0];
+                pdf.save(`${timestamp}_laporanMetadata.pdf`);
             });
-    
-            pdf.autoTable({
-                head: [["Title", "Affiliation", "Author"]],
-                body: tableData,
-                startY: 50,
-                theme: 'grid',
-                styles: { halign: 'center', textColor: [0, 0, 0] },
-                headStyles: { fillColor: [180, 180, 180], textColor: [0, 0, 0] }
-            });
-    
-            const finalY = pdf.lastAutoTable.finalY + 10;
-            pdf.setFontSize(12);
-            pdf.setTextColor(0, 0, 0);
-            pdf.text("Jurnal TeknoIF", 180, finalY + 10, { align: "right" });
-            pdf.text(new Date().toLocaleDateString(), 180, finalY + 20, { align: "right" });
-    
-            const now = new Date();
-            const timestamp = now.getFullYear().toString() +
-                String(now.getMonth() + 1).padStart(2, '0') +
-                String(now.getDate()).padStart(2, '0') + "_" +
-                String(now.getHours()).padStart(2, '0') +
-                String(now.getMinutes()).padStart(2, '0') +
-                String(now.getSeconds()).padStart(2, '0');
-    
-            const filename = `${timestamp}_laporanMetadata.pdf`;
-    
-            pdf.save(filename);
         });
-    });
     </script>
-    
 
 </body>
 

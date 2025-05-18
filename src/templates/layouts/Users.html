@@ -39,10 +39,6 @@
     <!-- <h1 class="text-2xl font-bold mb-4"></h1> -->
     <button class="proses mb-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         onclick="location.href='/adduser';">Add New User</button>
-    <!-- <a href="{{ url_for('routes.add_user') }}"
-        class="proses mb-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-        Add New User
-    </a> -->
 
     <table class="min-w-full border-collapse border border-gray-200 mb-4">
         <thead>
@@ -82,7 +78,7 @@
                 </td>
                 <td class="border border-gray-300 px-4 py-2">{{ user.role }}</td>
                 <td class="border border-gray-300 px-4 py-2 text-center">
-                    {% if user.status == 'tidak' %}
+                    {% if user.status == 'nonaktif' %}
                     <form method="POST" action="{{ url_for('routes.update_status', user_id=user.id, status='aktif') }}"
                         onsubmit="return confirm('Apakah Anda yakin ingin mengubah status menjadi aktif?');">
                         <button type="submit"
@@ -91,7 +87,7 @@
                         </button>
                     </form>
                     {% elif user.status == 'aktif' %}
-                    <form method="POST" action="{{ url_for('routes.update_status', user_id=user.id, status='tidak') }}"
+                    <form method="POST" action="{{ url_for('routes.update_status', user_id=user.id, status='nonaktif') }}"
                         onsubmit="return confirm('Apakah Anda yakin ingin mengubah status menjadi tidak aktif?');">
                         <button type="submit"
                             class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded">
@@ -105,11 +101,12 @@
                     {% endif %}
                 </td>
 
-                <td class="flex gap-1 justify-center items-center borderborder-gray-300 px-4 py-2">
+                <td class="flex gap-1 justify-center items-center border border-gray-300 px-4 py-2">
                     <a href="{{ url_for('routes.edit_user', user_id=user.id) }}"
                         class="edit-user-button bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded">Edit</a>
                     <form method="POST" action="{{ url_for('routes.delete_user', user_id=user.id) }}"
-                        style="display:inline;">
+                        style="display:inline;"
+                        onsubmit="return confirm('Are you sure you want to delete this user?');">
                         <button type="submit"
                             class="delete-user-button bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded">
                             Delete
@@ -119,7 +116,7 @@
             </tr>
             {% else %}
             <tr>
-                <td colspan="4" class="text-center py-4">No users found.</td>
+                <td colspan="12" class="text-center py-4">No users found.</td>
             </tr>
             {% endfor %}
         </tbody>
@@ -135,30 +132,6 @@
             if (!document.getElementById("user-menu-button").contains(e.target)) {
                 document.getElementById("user-menu").classList.add("hidden");
             }
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.delete-user-button').forEach(button => {
-                button.addEventListener('click', function () {
-                    const userId = this.getAttribute('data-id');
-                    if (confirm('Are you sure you want to delete this user?')) {
-                        fetch(`/delete_user/${userId}`, { method: 'DELETE' })
-                            .then(response => {
-                                if (response.ok) {
-                                    alert('Failed to delete user');
-                                    location.reload();
-                                } else {
-                                    alert('User deleted successfully');
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                alert('An error occurred while deleting the user');
-                            });
-                    }
-                });
-            });
         });
     </script>
 </body>

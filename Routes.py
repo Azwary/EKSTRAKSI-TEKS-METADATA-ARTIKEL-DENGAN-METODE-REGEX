@@ -184,7 +184,7 @@ def total_users():
 def articles():
     metadata = get_all_metadata()
     page = request.args.get('page', 1, type=int)
-    per_page = 5
+    per_page = 8
     start = (page - 1) * per_page
     end = start + per_page
 
@@ -194,7 +194,9 @@ def articles():
     return render_template('layouts/articles.html', 
                            articles=paginated_data,
                            current_page=page,
-                           total_pages=total_pages)
+                           total_pages=total_pages,
+                           all_articles=metadata)
+
 
 # @routes.route('/articles', methods=['GET'])
 # @login_required
@@ -439,7 +441,7 @@ def users():
 
 @routes.route('/adduser', methods=['GET', 'POST'])
 @login_required
-@role_required(('Manager,Chief-Editor'))
+@role_required(('Manager', 'Chief-Editor'))
 def add_user():
     """Menambahkan pengguna baru ke dalam database."""
     roles = ['Chief-Editor', 'Manager', 'Editor']

@@ -34,7 +34,8 @@
             class="border border-gray-300 rounded py-2 px-4 w-1/3 focus:ring-2 focus:ring-indigo-500">
     </div>
 
-    <table class="min-w-full border border-gray-200 mb-4">
+   <table id="metadataTable" class="min-w-full border border-gray-200 mb-4">
+
         <thead>
             <tr class="text-sm">
                 <th class="border px-4 py-2">No</th>
@@ -51,7 +52,10 @@
             {% if articles %}
             {% for item in articles %}
             <tr class="border">
-                <td class="border px-4 py-2 text-center">{{ (current_page - 1) * 7 + loop.index }}</td>
+                <td class="border px-4 py-2 text-center">
+                    {{ (current_page - 1) * 7 + loop.index }}
+                </td>
+
                 <td class="border px-4 py-2 text-center">{{ item.title }}</td>
                 <td class="border px-4 py-2 text-center">
                     <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded"
@@ -118,7 +122,9 @@
     </div>
 
 
-
+<script id="allArticlesData" type="application/json">
+    {{ all_articles | tojson }}
+</script>
     <!-- Script -->
     <script>
         document.getElementById("user-menu-button").addEventListener("click", function () {
