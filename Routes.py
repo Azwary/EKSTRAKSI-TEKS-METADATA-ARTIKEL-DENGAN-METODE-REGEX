@@ -7,6 +7,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from model.regex import extract_text_from_pdf, clean, extract_metadata
 from database import Error, create_connection, save_metadata, get_all_metadata, get_all_users, get_total_articles, get_total_users, get_roles, get_all_users, update_user_status
 
+import time
+
 ALLOWED_EXTENSIONS = {'pdf'}
 
 def allowed_file(filename):
@@ -223,15 +225,25 @@ def upload_file():
                 file_path = os.path.join(UPLOAD_FOLDER, filename)
                 file.save(file_path)
                 try:
+                    # Mulai stopwatch
+                    start = time.time()
+                    # Proses ekstraksi
                     text = extract_text_from_pdf(file_path)
                     cleaned_text = clean(text)
                     metadata = extract_metadata(cleaned_text)
+                    # Akhiri stopwatch
+                    end = time.time()
+                    # Hitung waktu eksekusi
+                    execution_time = end - start
+                    print("Waktu Eksekusi:", execution_time, "detik")
+                    # print("Metadata:", metadata)
                     return render_template('layouts/result.html', metadata=metadata, filename=filename, file_path=file_path)
                 except PdfReadError:
                     error_message = 'Format tidak didukung atau file PDF rusak.'
             else:
                 error_message = 'Format tidak didukung. Harap unggah file PDF.'
     
+
     return render_template('layouts/upload.html', error_message=error_message, success_message=success_message)
 
 
