@@ -42,7 +42,7 @@ def extract_metadata(text):
     author = [author.strip() for author in author if author.strip().lower() not in ['com', 'id']]  # Menghapus 'com' dan 'id'
 
     # Extract affiliation
-    affiliation = re.findall(r'[\d,]*\s*((?:Universitas|Institut|Politeknik)(?:\s+(?!Email\b|E-mail\b|e-mail\b|Semarang\b)[A-Z][a-zA-Z\.]*)+)', text)
+    affiliation = re.findall(r'\d+((?:Universitas|Institut|Politeknik|Sekolah Tinggi|University|Institute|Polytechnic|academy)(?:\s+(?!Email\b|E-mail\b|e-mail\b|Semarang\b)[A-Z][a-zA-Z\.]*)+)', text)
     affiliation = [affil.strip() for affil in affiliation if affil.strip().lower() ] # '' != 'jurusan'
 
     # Ekstraksi abstrak EN
