@@ -5,8 +5,8 @@ from PyPDF2.errors import PdfReadError
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash
 from model.regex import extract_text_from_pdf, clean, extract_metadata
-from database import Error, create_connection, save_metadata, get_all_metadata, get_all_users, get_total_articles, get_total_users, get_roles, get_all_users, update_user_status
-
+from database import Error, create_connection, save_metadata, get_all_metadata, get_all_users, get_total_articles, get_total_users, get_roles, get_all_users, update_user_status, get_user_by_username
+from datetime import datetime
 import time
 
 ALLOWED_EXTENSIONS = {'pdf'}
@@ -27,22 +27,25 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
-            flash("Anda belum login", "error")
+            flash("You are not logged in", "gagal")
             return redirect(url_for('routes.login'))
         return f(*args, **kwargs)
     return decorated_function
 
 def role_required(roles):
     """Dekorator untuk membatasi akses berdasarkan peran pengguna."""
-    if isinstance(roles, str):  # Jika hanya satu peran, ubah menjadi tuple
+    if isinstance(roles, str): 
         roles = (roles,)
 
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             if session.get('role') not in roles:
-                flash("Anda tidak memiliki akses ke halaman ini.", "error")
-                return render_template("layouts/error.html", message="Anda tidak memiliki akses ke halaman ini.")
+                # flash("Anda tidak memiliki akses ke halaman ini.", "error")
+                # return render_template("layouts/error.html", message="Anda tidak memiliki akses ke halaman ini.")
+                flash("You do not have access to this page.", "gagal")
+                return redirect(request.referrer or '/')
+                # return render_template("layouts/error.html", message="Anda tidak memiliki akses ke halaman ini.")
             return f(*args, **kwargs)
         return decorated_function
     return decorator
@@ -57,7 +60,9 @@ def error():
 
 @routes.route('/register', methods=['GET', 'POST'])
 def register():
+    start = time.time()
     if request.method == 'POST':
+        # Ambil data dari form
         nama = request.form['nama']
         username = request.form['username']
         password = request.form['password']
@@ -67,101 +72,112 @@ def register():
         ID_Scopus = request.form['ID_Scopus']
         ID_Sinta = request.form['ID_Sinta']
         ID_GoogleScholar = request.form['ID_GoogleScholar']
-        NoWa = request.form['NoWa']
+        NoWa = request.form['NoWa'].strip().replace(" ", "").replace("-", "")
         ORCID = request.form['ORCID']
 
-        # Validate password confirmation
+        # Validasi konfirmasi password
         if password != confirm_password:
-            flash("Password dan konfirmasi password tidak cocok", "error")
+            end = time.time()
+            flash(f"{end - start:.3f} sec", 'waktu')
+            flash("Password and password confirmation failed", "gagal")
             return redirect(url_for('routes.register'))
 
-        # Hash the password
+        # Format NoWa: ubah 08xxx -> +628xxx
+        if NoWa.startswith("08"):
+            NoWa = "+62" + NoWa[1:]
+
+        # Hash password
         hashed_password = generate_password_hash(password)
 
+        # Koneksi ke database
         connection = create_connection()
         if connection is None:
+            flash("Failed to connect to database", "gagal")
             return "Database connection failed", 500
 
         try:
             cursor = connection.cursor()
-            query = "INSERT INTO users (nama, username, password, role, email, nama_afiliasi, ID_Scopus, ID_Sinta, ID_GoogleScholar, NoWa, ORCID, status) VALUES (%s, %s, %s, 'Editor', %s, %s, %s, %s, %s, %s, %s, 'nonaktif')"
-            cursor.execute(query, (nama, username, hashed_password, email, nama_afiliasi, ID_Scopus, ID_Sinta, ID_GoogleScholar, NoWa, ORCID))
+            query = """
+                INSERT INTO users 
+                (nama, username, password, role, email, nama_afiliasi, ID_Scopus, ID_Sinta, ID_GoogleScholar, NoWa, ORCID, status) 
+                VALUES (%s, %s, %s, 'Editor', %s, %s, %s, %s, %s, %s, %s, 'nonaktif')
+            """
+            cursor.execute(query, (
+                nama, username, hashed_password, email,
+                nama_afiliasi, ID_Scopus, ID_Sinta,
+                ID_GoogleScholar, NoWa, ORCID
+            ))
             connection.commit()
-            flash("Registrasi berhasil! Silakan login.", "success")
-            return redirect(url_for('routes.login'))  
+            end = time.time()
+            flash(f"{end - start:.3f} sec", 'waktu')
+            flash("Registration successful! Please login.", "berhasil")
+            return redirect(url_for('routes.login'))
+
         except Exception as e:
             print(f"Error: {e}")
-            flash("Gagal mendaftar pengguna", "error")
+            end = time.time()
+            flash(f"{end - start:.3f} sec", 'waktu')
+            flash("Failed to register", "gagal")
             return redirect(url_for('routes.register'))
+
         finally:
             if connection.is_connected():
                 cursor.close()
                 connection.close()
 
-    return render_template('auth/register.html')  
+    return render_template('auth/register.html')
 
 @routes.route('/login', methods=['GET', 'POST'])
 def login():
+    start = time.time()
+
     if request.method == 'POST':
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '').strip()
 
         user = get_user_by_username(username)
+
         if user:
             if user['status'] != 'aktif': 
-                flash("Akun Anda tidak aktif. Hubungi admin untuk mengaktifkan akun.", "error")
+                flash("Your account is inactive. Contact admin to activate the account.", "gagal")
+
+                end = time.time()
+                execution_time = end - start
+                flash(f"{execution_time:.3f} sec", 'waktu')
+
                 return redirect(url_for('routes.login'))
 
             if check_password_hash(user['password'], password):
+                session.permanent = True  
                 session['user_id'] = user['id']
                 session['nama'] = user['nama']
                 session['username'] = user['username']
                 session['role'] = user['role']
-                
+
+                end = time.time()
+                execution_time = end - start
+                flash(f"{execution_time:.3f} sec", 'waktu')
+
                 last_url = session.get('last_url', 'dashboard') 
                 return redirect(last_url)
+            else:
+                # Username benar, password salah
+                flash("Incorrect password.", "gagal")
+        else:
+            # Username tidak ditemukan
+            flash("Username not found.", "gagal")
 
-        flash("Username atau password salah", "error")
+        # Akhir dari POST gagal (user not found atau password salah)
+        end = time.time()
+        execution_time = end - start
+        flash(f"{execution_time:.3f} sec", 'waktu')
+
     return render_template('auth/login.html')
 
 
-
-def get_user_by_username(username):
-    connection = create_connection()
-    if connection is None:
-        return None
-
-    try:
-        cursor = connection.cursor(dictionary=True)
-        query = "SELECT * FROM users WHERE username = %s"
-        cursor.execute(query, (username,))
-        user = cursor.fetchone()
-        return user
-    except Exception as e:
-        print(f"Error: {e}")
-        return None
-    finally:
-        if connection.is_connected():
-            cursor.close()
-            connection.close()
-
-def update_user_password(user_id, new_password):
-    """Fungsi untuk memperbarui password pengguna di database."""
-    connection = create_connection()
-    if connection is None:
-        return "Database connection failed", 500
-
-    try:
-        cursor = connection.cursor()
-        query = "UPDATE users SET password = %s WHERE id = %s"
-        cursor.execute(query, (new_password, user_id))
-        connection.commit()
-    except Exception as e:
-        print(f"Error: {e}")
-    finally:
-        if connection.is_connected():
-            cursor.close()
-            connection.close()
+@routes.before_app_request
+def refresh_session():
+    session.modified = True  
 
 @routes.route("/dashboard")
 @login_required
@@ -225,18 +241,13 @@ def upload_file():
                 file_path = os.path.join(UPLOAD_FOLDER, filename)
                 file.save(file_path)
                 try:
-                    # Mulai stopwatch
                     start = time.time()
-                    # Proses ekstraksi
                     text = extract_text_from_pdf(file_path)
                     cleaned_text = clean(text)
                     metadata = extract_metadata(cleaned_text)
-                    # Akhiri stopwatch
                     end = time.time()
-                    # Hitung waktu eksekusi
                     execution_time = end - start
-                    print("Waktu Eksekusi:", execution_time, "detik")
-                    # print("Metadata:", metadata)
+                    flash(f"{execution_time:.3f} sec", 'waktu')
                     return render_template('layouts/result.html', metadata=metadata, filename=filename, file_path=file_path)
                 except PdfReadError:
                     error_message = 'Format tidak didukung atau file PDF rusak.'
@@ -295,12 +306,12 @@ def results():
                 connection.commit()
                 cursor.close()
                 connection.close()
-                flash('Metadata berhasil disimpan!', 'success')
+                flash('Metadata saved successfully!', 'berhasil')
             except Error as e:
-                flash(f'Gagal menyimpan metadata: {e}', 'danger')
+                flash(f'Failed to save metadata: {e}', 'gagal')
                 print(f"Error: {e}")
         else:
-            flash('Koneksi ke database gagal!', 'danger')
+            flash('Connection to database failed!', 'gagal')
 
     return redirect(url_for('routes.articles'))
 
@@ -347,11 +358,11 @@ def save_metadata():
             connection.commit()
             cursor.close()
             connection.close()
-            flash('Metadata berhasil disimpan!', 'success')
+            flash('Metadata saved successfully!', 'berhasil')
         else:
-            flash('Koneksi ke database gagal!', 'danger')
+            flash('Connection to database failed!', 'gagal')
     except Error as e:
-        flash(f'Gagal menyimpan metadata: {e}', 'danger')
+        flash(f'Failed to save metadata: {e}', 'gagal')
         print(f"Error: {e}")
 
     return redirect(url_for('routes.articles'))
@@ -433,7 +444,7 @@ def delete_article(article_id):
         cursor.execute("DELETE FROM articles WHERE id = %s", (article_id,))
         conn.commit()
 
-        return jsonify({"message": "Artikel berhasil dihapus"}), 200
+        return jsonify({"message": "Article successfully deleted"}), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -445,19 +456,16 @@ def delete_article(article_id):
 
 @routes.route('/users', methods=['GET'])
 @login_required
-@role_required(('Manager', 'Chief-Editor'))
+@role_required(('Manager'))
 def users():
-    """Menampilkan daftar pengguna dari database."""
     users = get_all_users()
     return render_template('layouts/Users.html', users=users)
 
 @routes.route('/adduser', methods=['GET', 'POST'])
 @login_required
-@role_required(('Manager', 'Chief-Editor'))
+@role_required(('Manager'))
 def add_user():
-
     roles = ['Editor', 'Manager', 'Chief-Editor']
-    
     if request.method == 'POST':
         nama = request.form['nama']
         username = request.form['username']
@@ -474,14 +482,14 @@ def add_user():
 
         # Validasi password dan konfirmasi
         if password != confirm_password:
-            flash("Password dan konfirmasi password tidak cocok", "error")
+            flash("Password and password confirmation failed", "gagal")
             return redirect(url_for('routes.add_user'))
 
         hashed_password = generate_password_hash(password)
 
         connection = create_connection()
         if connection is None:
-            flash("Database connection failed", "error")
+            flash("Database connection failed", "gagal")
             return redirect(url_for('routes.users'))
 
         try:
@@ -498,9 +506,9 @@ def add_user():
             )
             cursor.execute(query, values)
             connection.commit()
-            flash("User added successfully", "success")
+            flash("User added successfully", "berhasil")
         except Exception as e:
-            flash(f"Failed to add user: {e}", "error")
+            flash(f"Failed to add user: {e}", "gagal")
         finally:
             if connection.is_connected():
                 cursor.close()
@@ -514,7 +522,7 @@ def add_user():
 
 @routes.route('/edit_user/<int:user_id>', methods=['GET', 'POST'])
 @login_required
-@role_required(('Manager', 'Chief-Editor'))
+@role_required(('Manager'))
 def edit_user(user_id):
     connection = create_connection()
     if connection is None:
@@ -557,7 +565,7 @@ def edit_user(user_id):
             # Jika password diisi dan cocok, tambahkan ke update
             if password:
                 if password != confirm_password:
-                    flash("Password dan konfirmasi tidak cocok!", "error")
+                    flash("Password and confirmation do not match!", "gagal")
                     return redirect(url_for('routes.edit_user', user_id=user_id))
                 hashed_password = generate_password_hash(password)
                 update_fields += ", password = %s"
@@ -567,14 +575,14 @@ def edit_user(user_id):
             query_update = f"UPDATE users SET {update_fields} WHERE id = %s"
             cursor.execute(query_update, values)
             connection.commit()
-            flash("User updated successfully", "success")
+            flash("Updated successfully", "berhasil")
             return redirect(url_for('routes.users'))
 
         # GET Method – Ambil data user & role
         cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
         user = cursor.fetchone()
         if not user:
-            flash("User not found", "error")
+            flash("User not found", "gagal")
             return redirect(url_for('routes.users'))
 
         # Ambil enum values dari kolom 'role'
@@ -586,7 +594,7 @@ def edit_user(user_id):
 
     except Exception as e:
         print(f"Error: {e}")
-        flash("Terjadi kesalahan saat mengupdate user", "error")
+        flash("An error occurred while updating the user", "gagal")
         return redirect(url_for('routes.users'))
     finally:
         if connection.is_connected():
@@ -595,26 +603,27 @@ def edit_user(user_id):
 
 @routes.route('/update-status/<int:user_id>/<status>', methods=['POST'])
 @login_required
-@role_required(('Manager', 'Chief-Editor'))
+@role_required(('Manager'))
 def update_status(user_id, status):
     if status not in ["aktif", "nonaktif"]:
-        return "Status tidak valid", 400  
-
+        return "Invalid status", 400  
     success = update_user_status(user_id, status)
     if success:
+        flash("succeed", "berhasil")
         return redirect(url_for('routes.users'))
     else:
+        flash("Fail", "gagal")
         return "Gagal memperbarui status", 500
 
 
 @routes.route('/delete_user/<int:user_id>', methods=['POST'])
 @login_required
-@role_required(('Manager', 'Chief-Editor'))
+@role_required(('Manager'))
 def delete_user(user_id):
     """Menghapus pengguna berdasarkan ID."""
     connection = create_connection()
     if connection is None:
-        flash("Database connection failed", "error")
+        flash("Database connection failed", "gagal")
         return redirect(url_for('routes.users'))
 
     try:
@@ -622,9 +631,9 @@ def delete_user(user_id):
         query = "DELETE FROM users WHERE id = %s"
         cursor.execute(query, (user_id,))
         connection.commit()
-        flash("User deleted successfully", "success")
+        flash("User deleted successfully", "berhasil")
     except Exception as e:
-        flash(f"Failed to delete user: {e}", "error")
+        flash(f"Failed to delete user: {e}", "gagal")
     finally:
         if connection.is_connected():
             cursor.close()
@@ -635,6 +644,11 @@ def delete_user(user_id):
 
 @routes.route('/logout')
 def logout():
+    start = time.time()
     session.clear()
-    flash("Anda telah logout.", "info")
+    end = time.time()  
+    execution_time = end - start
+    flash("logout successful", "berhasil")
+    flash(f"{execution_time:.3f} sec", 'waktu')
     return redirect(url_for('routes.login'))
+

@@ -70,17 +70,16 @@
                 <td class="border border-gray-300 px-4 py-2">{{ user.ID_GoogleScholar }}</td>
                 <td class="border border-gray-300 px-4 py-2">{{ user.ORCID }}</td>
                 <td class="border border-gray-300 px-4 py-2 text-center">
-                    {% set no_wa = user.NoWa %}
+                    {% set no_wa = user.NoWa.replace('+', '') %}
                     {{ no_wa[:4] }} {{ no_wa[4:8] }} {{ no_wa[8:] }}
                     <span>
-                        <a href="https://wa.me/{{ user.NoWa }}" target="_blank" rel="noopener noreferrer"
+                        <a href="https://wa.me/{{ no_wa }}" target="_blank" rel="noopener noreferrer"
                             class="text-blue-500 hover:text-blue-700">
                             <img src="https://img.icons8.com/color/48/000000/whatsapp--v1.png" alt="WhatsApp"
                                 class="inline-block w-6 h-6 ml-2">
                         </a>
                     </span>
                 </td>
-
                 <td class="border border-gray-300 px-4 py-2">{{ user.role }}</td>
                 <td class="border border-gray-300 px-4 py-2 text-center">
                     {% if user.status == 'nonaktif' %}

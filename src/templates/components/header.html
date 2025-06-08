@@ -19,7 +19,7 @@
                 </button>
             </li>
             {% endif %}
-            {% if session.get('role') == 'Chief-Editor' or session.get('role') == 'Manager' %}
+            {% if session.get('role') == 'Manager' %}
             <li class="block py-2 text-center border-b border-white" >
                 <a href="/users" onclick="setActive(this)">
                     <i class="fas fa-user"></i><br>Users</a>

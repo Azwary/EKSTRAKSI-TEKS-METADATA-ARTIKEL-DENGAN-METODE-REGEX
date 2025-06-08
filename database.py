@@ -110,6 +110,24 @@ def get_total_users():
             cursor.close()
             connection.close()
 
+def get_user_by_username(username):
+    connection = create_connection()
+    if connection is None:
+        return None
+
+    try:
+        cursor = connection.cursor(dictionary=True)
+        query = "SELECT * FROM users WHERE username = %s"
+        cursor.execute(query, (username,))
+        user = cursor.fetchone()
+        return user
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+    finally:
+        if connection.is_connected():
+            cursor.close()
+            connection.close()  
 
 def get_all_users():
     """Mengambil semua data pengguna dari database."""
