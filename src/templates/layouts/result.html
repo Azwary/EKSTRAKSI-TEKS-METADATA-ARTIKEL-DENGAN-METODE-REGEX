@@ -1,0 +1,65 @@
+{% extends 'layouts/base.html' %}
+{% block title %}Extraction Results{% endblock %}
+{% block content %}
+<div>
+     <p class="text-2xl font-semibold">Extraction Results</p>
+
+     <p class="font-bold mt-4">Title:</p>
+     <p class="pl-5 font-semibold mb-4">{{ metadata.Ftitle }}</p>
+
+     <p class="font-bold mt-4">Author's Name:</p>
+     {% for author in metadata. author %}
+     <p class="pl-5 font-semibold">{{ loop.index }}. {{ author }}</p>
+     {% endfor %}
+
+     <p class="font-bold mt-4">Affiliation:</p>
+     {% for affiliation in metadata. affiliation %}
+     <p class="pl-5 font-semibold">{{ loop.index }}. {{ affiliation }}</p>
+     {% endfor %}
+
+     <p class="font-bold mt-4">Abstract:</p>
+     <p class="pl-5 text-justify">{{ metadata.abstractEN }}</p>
+
+     <p class="font-bold mt-4">Intisari:</p>
+     <p class="pl-5 text-justify">{{ metadata.abstract }}</p>
+
+     <p class="font-bold mt-4">full:</p>
+     <p class="pl-5 text-justify text-xl">{{ metadata.full }}</p>
+
+     <p class="font-bold mt-4">Clean:</p>
+     <p class="pl-5 text-justify text-xl">{{ metadata.clean }}</p>
+
+
+     <form method="post" enctype="multipart/form-data" action="/results">
+          <input type="hidden" name="title" value="{{ metadata.Ftitle }}">
+          <input type="hidden" name="author" value="{{ metadata.author|join(', ') }}">
+          <input type="hidden" name="affiliation" value="{{ metadata.affiliation|join(', ') }}">
+          <input type="hidden" name="abstract" value="{{ metadata.abstract }}">
+          <input type="hidden" name="abstractEN" value="{{ metadata.abstractEN }}">
+          <input type="hidden" name="filename" value="{{ filename }}">
+          <input type="hidden" name="file_path" value="{{ file_path }}">
+
+          <div class="flex justify-end gap-4">
+               <button type="submit"
+                    class="bg-yellow-700 text-white font-semibold py-2 px-4 rounded-md hover:bg-yellow-900 transition duration-200"
+                    name="action" value="edit">Edit</button>
+
+               <button type="submit"
+                    class="bg-blue-800 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-900 transition duration-200"
+                    name="action" value="save">Save</button>
+
+               <button type="button"
+                    class="bg-red-800 text-white font-semibold py-2 px-4 rounded-md hover:bg-red-900 transition duration-200"
+                    onclick="window.history.back();">Cancel</button>
+          </div>
+     </form>
+
+     {% if error_message %}
+     <p class="text-red-500 mt-4">{{ error_message }}</p>
+     {% endif %}
+
+     {% if success_message %}
+     <p class="text-green-500 mt-4">{{ success_message }}</p>
+     {% endif %}
+</div>
+{% endblock %}

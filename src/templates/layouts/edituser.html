@@ -1,0 +1,160 @@
+{% extends 'layouts/base.html' %}
+{% block title %}Edit Users{% endblock %}
+{% block content %}
+
+<body>
+    <h2 class="text-xl font-bold mb-4">Edit User</h2>
+    <form id="editUserForm" method="POST" action="{{ url_for('routes.edit_user', user_id=user.id) }}">
+        <input type="hidden" name="id" value="{{ user.id }}">
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label class="block text-gray-700">Full Name</label>
+                <input type="text" name="nama" class="border border-gray-300 p-2 w-full" value="{{ user.nama }}"
+                    required>
+            </div>
+
+            <div>
+                <label class="block text-gray-700">Username</label>
+                <input type="text" name="username" class="border border-gray-300 p-2 w-full" value="{{ user.username }}"
+                    required>
+            </div>
+
+            <div>
+                <label class="block text-gray-700">Role</label>
+                <select name="role" class="border border-gray-300 p-2 w-full" required>
+                    {% for role in roles %}
+                    <option value="{{ role }}" {% if role==user.role %}selected{% endif %}>{{ role }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-gray-700">Email</label>
+                <input type="email" name="email" class="border border-gray-300 p-2 w-full" value="{{ user.email }}"
+                    required>
+            </div>
+
+            <div>
+                <label class="block text-gray-700">Affiliation Name</label>
+                <input type="text" name="nama_afiliasi" class="border border-gray-300 p-2 w-full"
+                    value="{{ user.nama_afiliasi }}">
+            </div>
+
+            <div>
+                <label class="block text-gray-700">Scopus ID</label>
+                <input type="text" name="ID_Scopus" class="border border-gray-300 p-2 w-full"
+                    value="{{ user.ID_Scopus }}">
+            </div>
+
+            <div>
+                <label class="block text-gray-700">Sinta ID</label>
+                <input type="number" name="ID_Sinta" class="border border-gray-300 p-2 w-full"
+                    value="{{ user.ID_Sinta }}">
+            </div>
+
+            <div>
+                <label class="block text-gray-700">Google Scholar ID</label>
+                <input type="text" name="ID_GoogleScholar" class="border border-gray-300 p-2 w-full"
+                    value="{{ user.ID_GoogleScholar }}">
+            </div>
+
+            <div>
+                <label class="block text-gray-700">WhatsApp</label>
+                <input type="text" name="NoWa" class="border border-gray-300 p-2 w-full" value="{{ user.NoWa }}">
+            </div>
+
+            <div>
+                <label class="block text-gray-700">ORCID</label>
+                <input type="text" id="orcid-input" name="ORCID" class="border border-gray-300 p-2 w-full"
+                    pattern="\d{4}-\d{4}-\d{4}-\d{3}[0-9X]" placeholder="1234123412341234 or 1234-1234-1234-1234"
+                    title="Enter the correct ORCID format, for example: 1234123412341234 or 1234-1234-1234-1234"
+                    maxlength="19" oninput="formatOrcid(this)" value="{{ user.ORCID }}">
+            </div>
+
+
+            <div>
+                <label class="block text-gray-700">New Password (Optional)</label>
+                <div class="relative">
+                    <input type="password" id="password" name="password"
+                        class="border border-gray-300 p-2 w-full pr-10">
+                    <button type="button" onclick="togglePassword('password')"
+                        class="absolute right-2 top-2 text-gray-600" tabindex="-1">
+                        <i class="fas fa-eye" id="togglePassword_password"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-gray-700">Confirm Password</label>
+                <div class="relative">
+                    <input type="password" id="confirm_password" name="confirm_password"
+                        class="border border-gray-300 p-2 w-full pr-10">
+                    <button type="button" onclick="togglePassword('confirm_password')"
+                        class="absolute right-2 top-2 text-gray-600" tabindex="-1">
+                        <i class="fas fa-eye" id="togglePassword_confirm_password"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div id="notification" class="text-red-600 font-semibold mt-4 hidden"></div>
+
+        <div class="mt-6 flex justify-end gap-5">
+            <button type="submit"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Update</button>
+            <a href="{{ url_for('routes.users') }}"
+                class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Cancel</a>
+        </div>
+    </form>
+</body>
+<script>
+    function formatOrcid(input) {
+        let raw = input.value.replace(/\D/g, '');
+
+        if (raw.length > 16) raw = raw.substring(0, 16); 
+
+        let parts = [];
+        for (let i = 0; i < raw.length; i += 4) {
+            parts.push(raw.substr(i, 4));
+        }
+
+        input.value = parts.join('-');
+    }
+</script>
+<script>
+    function togglePassword(fieldId) {
+        const input = document.getElementById(fieldId);
+        const icon = document.getElementById('togglePassword_' + fieldId);
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = "password";
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+    document.getElementById('editUserForm').addEventListener('submit', function (event) {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
+        const notification = document.getElementById('notification');
+
+        notification.classList.add('hidden');
+        notification.textContent = '';
+
+        if ((password || confirmPassword) && password !== confirmPassword) {
+            event.preventDefault();
+            notification.textContent = 'Password dan Konfirmasi Password tidak cocok.';
+            notification.classList.remove('hidden');
+            return;
+        }
+    });
+    function validateEmail(email) {
+        const re = /\S+@\S+\.\S+/;
+        return re.test(email);
+    }
+
+</script>
+{% endblock %}

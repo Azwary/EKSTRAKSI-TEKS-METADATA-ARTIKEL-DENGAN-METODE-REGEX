@@ -1,0 +1,43 @@
+<body class="bg-gray-100">
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-12">
+
+                <div class="flex-shrink-0">
+                    <!-- <h1 class="text-xl font-bold text-gray-700">Jurnal Teknoif</h1> -->
+                </div>
+
+                <div class="flex items-center space-x-4">
+
+                    <div class="relative">
+                        <button id="user-menu-button"
+                            class="flex items-center space-x-2 bg-white rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            <!-- <i class="fas fa-book"></i> -->
+                            <span class="text-gray-700 font-medium">{{ role }}</span>
+                            <i class="fas fa-chevron-down text-gray-500 pl-1 pr-3"></i>
+                        </button>
+
+                        <div id="user-menu"
+                            class="hidden absolute right-0 mt-2 w-24 bg-white shadow-lg rounded-md py-2">
+                            <!-- <span class="text-gray-700 font-medium">{{ session['username'] }}</span> -->
+                            <!-- <a href="/settings" class="block px-4 py-2 text-gray-700 hover:bg-gray-200">Settings</a> -->
+                            <a href="/logout" class="block px-4 py-2 text-gray-700 hover:bg-gray-200"><i
+                                    class="fas fa-sign-out-alt pr-3"></i>logout</li></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <script>
+        document.getElementById("user-menu-button").addEventListener("click", function () {
+            document.getElementById("user-menu").classList.toggle("hidden");
+        });
+
+        window.addEventListener("click", function (e) {
+            if (!document.getElementById("user-menu-button").contains(e.target)) {
+                document.getElementById("user-menu").classList.add("hidden");
+            }
+        });
+    </script>
+</body>

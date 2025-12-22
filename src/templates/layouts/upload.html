@@ -1,0 +1,200 @@
+{% extends 'layouts/base.html' %} {% block title %}Upload Article{% endblock %}
+{% block content %}
+
+<!-- {% if error_message %} -->
+<!-- <script>
+     Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: '{{ error_message }}',
+     });
+</script>
+{% endif %}
+
+{% if success_message %}
+<script>
+     Swal.fire({
+          icon: 'success',
+          title: 'Berhasil',
+          text: '{{ success_message }}',
+     });
+</script>
+{% endif %} -->
+
+<!-- <p class="text-2xl font-semibold mb-4"></p> -->
+<h2 class="text-2xl font-bold mb-6">Upload New Article</h2>
+<form id="uploadForm" method="post" enctype="multipart/form-data">
+  <div
+    id="drop-area"
+    class="drop-area p-4 mb-4 border-2 border-dashed border-gray-300 rounded-lg mt-20 text-center hover:border-blue-500 transition duration-200"
+    style="height: 200px"
+  >
+    <input
+      type="file"
+      name="file"
+      id="fileInput"
+      accept=".pdf, .docx"
+      required
+      class="hidden"
+    />
+    <label
+      for="fileInput"
+      class="text-center cursor-pointer text-blue-600 font-semibold"
+      >Choose File</label
+    >
+    <p id="fileName" class="mt-2 text-sm text-gray-500">
+      Tidak ada file yang dipilih
+    </p>
+  </div>
+  <div class="flex justify-end gap-4">
+    <button
+      type="submit"
+      name="action"
+      value="Process"
+      class="bg-blue-800 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-900 transition duration-200"
+    >
+      Process
+    </button>
+    <button
+      type="button"
+      name="action"
+      value="Cancel"
+      class="bg-red-800 text-white font-semibold py-2 px-4 rounded-md hover:bg-red-900 transition duration-200"
+      id="cancelButton"
+    >
+      Cancel
+    </button>
+  </div>
+</form>
+
+<!-- <form id="uploadForm" method="post" enctype="multipart/form-data">
+         <div id="drop-area" aria-labelledby="drop-area-label" class="drop-area p-4 mb-4 text-center">
+             <input type="file" name="file" id="fileInput" accept=".pdf" required class="block mx-auto">
+             <p id="fileName" class="mt-2 text-sm text-gray-500">Tidak ada file yang dipilih</p>
+         </div>
+         <div class="flex justify-end gap-4">
+             <button type="submit"
+                 class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200">
+                 Process
+             </button>
+             <button type="button"
+                 class="bg-red-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-red-700 transition duration-200">
+                 Cancel
+             </button>
+         </div>
+     </form>
+     
+     <div class="h-screen flex items-center justify-center">  
+          <div class="bg-white shadow-lg rounded-lg p-6 w-96">  
+              <p class="text-2xl font-semibold mb-4 text-center">Upload New Article</p>  
+              <form id="uploadForm" method="post" enctype="multipart/form-data">  
+                  <div id="drop-area" class="drop-area p-4 mb-4 border-2 border-dashed border-gray-300 rounded-lg text-center hover:border-blue-500 transition duration-200">  
+                      <input type="file" name="file" id="fileInput" accept=".pdf" required class="hidden">  
+                      <label for="fileInput" class="cursor-pointer text-blue-600 font-semibold">Choose File</label>  
+                      <p id="fileName" class="mt-2 text-sm text-gray-500">Tidak ada file yang dipilih</p>  
+                  </div>  
+                  <div class="flex justify-between">  
+                      <button type="submit" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200 w-full mr-2">  
+                          Process  
+                      </button>  
+                      <button type="button" class="bg-red-600 text-white font-semibold py-2 px-4 rounded-md hover:bg-red-700 transition duration-200 w-full">  
+                          Cancel  
+                      </button>  
+                  </div>  
+              </form>  
+          </div>  
+      </div>   -->
+
+<script>
+  document
+    .getElementById("cancelButton")
+    .addEventListener("click", function () {
+      // Redirect to the articles page
+      window.location.href = "/articles";
+    });
+
+  const fileInput = document.getElementById("fileInput");
+  const fileNameDisplay = document.getElementById("fileName");
+
+  fileInput.addEventListener("change", function () {
+    const fileName = fileInput.files[0]
+      ? fileInput.files[0].name
+      : "Tidak ada file yang dipilih";
+    fileNameDisplay.textContent = fileName;
+  });
+</script>
+
+<!-- <form id="uploadForm" method="post" enctype="multipart/form-data" action="/upload">
+          <div id="drop-area" aria-labelledby="drop-area-label">
+               <label id="drop-area-label" for="file-upload">.</label>
+               <p id="file-name" aria-live="polite"></p>
+               <button type="button" title="Choose file">Choose file</button>
+               <input type="file" name="article" id="file-upload" required aria-describedby="file-upload-description">
+          </div>
+          <div class="button-container">
+               <button class="cancel" type="button" id="cancel-button">Cancel</button>
+               <button class="proses" type="submit">Proses</button>
+          </div>
+     </form> -->
+
+<!-- <script>
+          const dropArea = document.getElementById("drop-area");
+          const fileInput = document.getElementById("file-upload");
+          const fileNameDisplay = document.getElementById("file-name");
+          const cancelButton = document.getElementById("cancel-button");
+
+          // Prevent default behaviors
+          ["dragenter", "dragover", "dragleave", "drop"].forEach(eventName => {
+               dropArea.addEventListener(eventName, preventDefaults, false);
+          });
+
+          function preventDefaults(e) {
+               e.preventDefault();
+               e.stopPropagation();
+          }
+
+          // Highlight drop area when file is dragged over it
+          ["dragenter", "dragover"].forEach(eventName => {
+               dropArea.addEventListener(eventName, () => dropArea.classList.add("highlight"), false);
+          });
+
+          ["dragleave", "drop"].forEach(eventName => {
+               dropArea.addEventListener(eventName, () => dropArea.classList.remove("highlight"), false);
+          });
+
+          // Handle dropped files
+          dropArea.addEventListener("drop", (e) => {
+               let dt = e.dataTransfer;
+               let files = dt.files;
+               handleFiles(files);
+          });
+
+          // Handle files and set them in the file input
+          function handleFiles(files) {
+               if (files.length > 0) {
+                    fileInput.files = files;
+                    updateFileName(files[0].name);
+               }
+          }
+
+          // Open file dialog when clicking on the drop area
+          dropArea.addEventListener("click", () => fileInput.click());
+
+          // Update drop area text when a file is selected through the input
+          fileInput.addEventListener("change", () => {
+               if (fileInput.files.length > 0) {
+                    updateFileName(fileInput.files[0].name);
+               }
+          });
+
+          function updateFileName(name) {
+               fileNameDisplay.textContent = name;
+          }
+
+          // Cancel button to clear file selection
+          cancelButton.addEventListener("click", () => {
+               fileInput.value = ""; // Clear the file input
+               fileNameDisplay.textContent = "";
+          });
+     </script> -->
+{% endblock %}

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/JurnalArsip.png') }}">
+    <title>Jurnal Arsip Teknoif | Login</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="bg-blue-900 flex items-center justify-center min-h-screen relative">
+        <!-- <span class="absolute top-0 right-0 m-4 flex items-end">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, msg in messages %}
+            {% if category == 'waktu' %}
+            <div class="bg-blue-100 border border-blue-400 text-blue-700 px-2 py-1 rounded relative text-center">
+                {{ msg }}
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+        </span> -->
+        <div class="bg-white p-9 rounded-lg shadow-lg w-full max-w-md">
+            <div class="flex justify-center items-center mb-5">
+                <img style="width: 90%; height: 90%;" src="{{ url_for('static', filename='img/icon.png') }}" alt="Logo">
+            </div>
+            <form action="/login" method="post" enctype="multipart/form-data" autocomplete="off" accept-charset="utf-8">
+                <input type="hidden" name="Token" value="b6b28a2ba0597557b3f680de81b35ced">
+                <div class="mb-6">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                    {% for category, msg in messages %}
+                    {% if category == 'gagal' or category == 'berhasil' %}
+                    <div
+                        class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-center mb-4">
+                        {{ msg }}
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+                </div>
+                <div class="mb-4">
+                    <label for="username" class="block text-gray-700 font-bold mb-2">Username</label>
+                    <input type="text" id="username" name="username" required
+                        class="border-0 border-b-2 border-blue-200 w-full py-2 px-0 text-gray-700 leading-tight focus:outline-none focus:border-b-2 focus:border-blue-800">
+                </div>
+                <div class="mb-6">
+                    <label for="password" class="block text-gray-700 font-bold mb-2">Password</label>
+                    <div class="relative">
+                        <input type="password" id="password" name="password" required
+                            class="border-0 border-b-2 border-blue-200 w-full py-2 px-0 text-gray-700 leading-tight focus:outline-none focus:border-b-2 focus:border-blue-800">
+                        <button type="button" onclick="togglePassword('password')"
+                            class="absolute right-2 top-2 text-gray-600" tabindex="-1">
+                            <i class="fas fa-eye" id="togglePassword_password"></i>
+                        </button>
+                    </div>
+                </div>
+
+
+                <button type="submit"
+                    class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">Login</button>
+            </form>
+            <div class="flex justify-center mt-7">
+                <a class=" text-center text-slate-500  hover:text-slate-300 font-normal text-xs"
+                    href="{{ url_for('routes.register') }}">
+                    Dont have an account?
+                </a>
+            </div>
+            <div class="text-center mt-6 text-gray-800 text-xs">
+                @ - 2025
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    function togglePassword(fieldId) {
+        const input = document.getElementById(fieldId);
+        const icon = document.getElementById('togglePassword_' + fieldId);
+        if (input.type === "password") {
+            input.type = "text";
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            input.type = "password";
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    }
+</script>
+
+</html>
