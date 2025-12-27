@@ -1,47 +1,80 @@
-{% extends 'layouts/base.html' %}
-{% block title %}Edit Article{% endblock %}
-{% block content %}
+{% extends 'layouts/base.html' %} {% block title %}Edit Article{% endblock %} {%
+block content %}
 <div>
-    <h1 class="text-2xl font-bold mb-4">Edit Article</h1>
-
-    <form action="{{ url_for('routes.update_article') }}" method="POST" class="w-full">
-        <input type="hidden" name="id" value="{{ article.id }}">
-
-        <div class="mb-3 flex items-center gap-4">
-            <label class="text-gray-700 font-bold w-32">Title</label>
-            <input type="text" name="title" value="{{ article.title }}" required class="flex-1 border p-2 rounded-md">
-        </div>
-
-        <div class="mb-3 flex items-center gap-4">
-            <label class="text-gray-700 font-bold w-32">Author</label>
-            <input type="text" name="author" value="{{ article.author }}" required class="flex-1 border p-2 rounded-md">
-        </div>
-
-        <div class="mb-3 flex items-center gap-4">
-            <label class="text-gray-700 font-bold w-32">Affiliation</label>
-            <input type="text" name="affiliation" value="{{ article.affiliation }}" required
-                class="flex-1 border p-2 rounded-md">
-        </div>
-
-        <div class="mb-3 flex items-center gap-4">
-            <label class="text-gray-700 font-bold w-32">Intisari</label>
-            <textarea name="abstract" rows="4" required
-                class="flex-1 border p-2 rounded-md">{{ article.abstract }}</textarea>
-        </div>
-
-        <div class="mb-3 flex items-center gap-4">
-            <label class="text-gray-700 font-bold w-32">Abstract</label>
-            <textarea name="abstractEN" rows="4" required
-                class="flex-1 border p-2 rounded-md">{{ article.abstractEN }}</textarea>
-        </div>
-        <div class="flex justify-end gap-3 mt-4">
-            <button type="submit" class="bg-blue-800 text-white font-semibold py-2 px-4 rounded-md">
-                Save Changes
-            </button>
-            <button type="button"
-                class="bg-red-800 text-white font-semibold py-2 px-4 rounded-md hover:bg-red-900 transition duration-200"
-                onclick="window.history.back();">Cancel</button>
-        </div>
-    </form>
+  <h1 class="text-2xl font-bold mb-4">Edit Article</h1>
+  <form
+    action="{{ url_for('routes.update_article') }}"
+    method="POST"
+    class="w-full"
+  >
+    <input type="hidden" name="id" value="{{ article.id }}" />
+    <div class="mb-3 flex items-center gap-4">
+      <label class="text-gray-700 font-bold w-32">Title</label>
+      <input
+        type="text"
+        name="title"
+        value="{{ article.title }}"
+        required
+        class="flex-1 border p-2 rounded-md"
+      />
+    </div>
+    <div class="mb-3 flex items-center gap-4">
+      <label class="text-gray-700 font-bold w-32">Author</label>
+      <input
+        type="text"
+        name="author"
+        value="{{ article.author }}"
+        required
+        class="flex-1 border p-2 rounded-md"
+      />
+    </div>
+    <div class="mb-3 flex items-center gap-4">
+      <label class="text-gray-700 font-bold w-32">Affiliation</label>
+      <input
+        type="text"
+        name="affiliation"
+        value="{{ article.affiliation }}"
+        required
+        class="flex-1 border p-2 rounded-md"
+      />
+    </div>
+    <div class="mb-3 flex items-center gap-4">
+      <label class="text-gray-700 font-bold w-32">Intisari</label>
+      <textarea
+        name="abstract"
+        rows="4"
+        required
+        class="flex-1 border p-2 rounded-md"
+      >
+{{ article.abstract }}</textarea
+      >
+    </div>
+    <div class="mb-3 flex items-center gap-4">
+      <label class="text-gray-700 font-bold w-32">Abstract</label>
+      <textarea
+        name="abstractEN"
+        rows="4"
+        required
+        class="flex-1 border p-2 rounded-md"
+      >
+{{ article.abstractEN }}</textarea
+      >
+    </div>
+    <div class="flex justify-end gap-3 mt-4">
+      <button
+        type="submit"
+        class="bg-blue-800 text-white font-semibold py-2 px-4 rounded-md"
+      >
+        Save Changes
+      </button>
+      <button
+        type="button"
+        class="bg-red-800 text-white font-semibold py-2 px-4 rounded-md hover:bg-red-900 transition duration-200"
+        onclick="window.history.back();"
+      >
+        Cancel
+      </button>
+    </div>
+  </form>
 </div>
 {% endblock %}

@@ -15,19 +15,6 @@
 
 <body>
     <div class="bg-blue-900 flex items-center justify-center min-h-screen relative">
-        <!-- <span class="absolute top-0 right-0 m-4 flex items-end">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-            {% for category, msg in messages %}
-            {% if category == 'waktu' %}
-            <div class="bg-blue-100 border border-blue-400 text-blue-700 px-2 py-1 rounded relative text-center">
-                {{ msg }}
-            </div>
-            {% endif %}
-            {% endfor %}
-            {% endif %}
-            {% endwith %}
-        </span> -->
         <div class="bg-white p-9 rounded-lg shadow-lg w-full max-w-md">
             <div class="flex justify-center items-center mb-5">
                 <img style="width: 90%; height: 90%;" src="{{ url_for('static', filename='img/icon.png') }}" alt="Logo">
@@ -64,8 +51,6 @@
                         </button>
                     </div>
                 </div>
-
-
                 <button type="submit"
                     class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">Login</button>
             </form>

@@ -1,56 +1,77 @@
-{% extends 'layouts/base.html' %}
-{% block title %}Edit Article{% endblock %}
-{% block content %}
+{% extends 'layouts/base.html' %} {% block title %}Edit Article{% endblock %} {%
+block content %}
 <div>
-     <h1 class="text-2xl font-bold mb-4">Edit Article</h1>
-
-     <form method="post" action="/save" class="w-full ">
-          <div class="border border-black rounded-md p-4 mb-4 bg-white shadow-lg">
-               <div class="mb-3 flex items-center gap-4">
-                    <label class="text-gray-700 font-bold w-32">Title</label>
-                    <input type="text" name="title" value="{{ metadata.title }}" required
-                         class="flex-1 border p-2 rounded-md">
-               </div>
-
-               <div class="mb-3 flex items-center gap-4">
-                    <label class="text-gray-700 font-bold w-32">Author's Name</label>
-                    <input type="text" name="author" value="{{ metadata.author }}" required
-                         class="flex-1 border p-2 rounded-md">
-               </div>
-
-               <div class="mb-3 flex items-center gap-4">
-                    <label class="text-gray-700 font-bold w-32">Affiliation</label>
-                    <input type="text" name="affiliation" value="{{ metadata.affiliation }}" required
-                         class="flex-1 border p-2 rounded-md">
-               </div>
-
-               <div class="mb-3 flex gap-4 items-start">
-                    <label class="text-gray-700 font-bold w-32">Abstract</label>
-                    <textarea name="abstractEN" required
-                         class="flex-1 border p-2 rounded-md h-36 text-justify">{{ metadata.abstractEN }}</textarea>
-               </div>
-
-               <div class="mb-3 flex gap-4 items-start">
-                    <label class="text-gray-700 font-bold w-32">Intisari</label>
-                    <textarea name="abstract" required
-                         class="flex-1 border p-2 rounded-md h-36 text-justify">{{ metadata.abstract }}</textarea>
-               </div>
-
-               <input type="hidden" name="filename" value="{{ metadata.filename }}">
-               <input type="hidden" name="file_path" value="{{ metadata.file_path }}">
-
-          </div>
-          <div class="flex justify-end gap-3 mt-4">
-               <button type="submit" class="bg-blue-800 text-white font-semibold py-2 px-4 rounded-md">
-                    Save
-               </button>
-               <button type="button"
-                    class="bg-red-800 text-white font-semibold py-2 px-4 rounded-md hover:bg-red-900 transition duration-200"
-                    onclick="window.history.back();">Cancel</button>
-          </div>
-     </form>
-
-
-
+  <h1 class="text-2xl font-bold mb-4">Edit Article</h1>
+  <form method="post" action="/save" class="w-full">
+    <div class="border border-black rounded-md p-4 mb-4 bg-white shadow-lg">
+      <div class="mb-3 flex items-center gap-4">
+        <label class="text-gray-700 font-bold w-32">Title</label>
+        <input
+          type="text"
+          name="title"
+          value="{{ metadata.title }}"
+          required
+          class="flex-1 border p-2 rounded-md"
+        />
+      </div>
+      <div class="mb-3 flex items-center gap-4">
+        <label class="text-gray-700 font-bold w-32">Author's Name</label>
+        <input
+          type="text"
+          name="author"
+          value="{{ metadata.author }}"
+          required
+          class="flex-1 border p-2 rounded-md"
+        />
+      </div>
+      <div class="mb-3 flex items-center gap-4">
+        <label class="text-gray-700 font-bold w-32">Affiliation</label>
+        <input
+          type="text"
+          name="affiliation"
+          value="{{ metadata.affiliation }}"
+          required
+          class="flex-1 border p-2 rounded-md"
+        />
+      </div>
+      <div class="mb-3 flex gap-4 items-start">
+        <label class="text-gray-700 font-bold w-32">Abstract</label>
+        <textarea
+          name="abstractEN"
+          required
+          class="flex-1 border p-2 rounded-md h-36 text-justify"
+        >
+{{ metadata.abstractEN }}</textarea
+        >
+      </div>
+      <div class="mb-3 flex gap-4 items-start">
+        <label class="text-gray-700 font-bold w-32">Intisari</label>
+        <textarea
+          name="abstract"
+          required
+          class="flex-1 border p-2 rounded-md h-36 text-justify"
+        >
+{{ metadata.abstract }}</textarea
+        >
+      </div>
+      <input type="hidden" name="filename" value="{{ metadata.filename }}" />
+      <input type="hidden" name="file_path" value="{{ metadata.file_path }}" />
+    </div>
+    <div class="flex justify-end gap-3 mt-4">
+      <button
+        type="submit"
+        class="bg-blue-800 text-white font-semibold py-2 px-4 rounded-md"
+      >
+        Save
+      </button>
+      <button
+        type="button"
+        class="bg-red-800 text-white font-semibold py-2 px-4 rounded-md hover:bg-red-900 transition duration-200"
+        onclick="window.history.back();"
+      >
+        Cancel
+      </button>
+    </div>
+  </form>
 </div>
 {% endblock %}
