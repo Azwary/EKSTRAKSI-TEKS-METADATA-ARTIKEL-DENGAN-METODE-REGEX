@@ -1,25 +1,21 @@
 {% extends 'layouts/base.html' %}
 {% block title %}Edit Users{% endblock %}
 {% block content %}
-
 <body>
     <h2 class="text-xl font-bold mb-4">Edit User</h2>
     <form id="editUserForm" method="POST" action="{{ url_for('routes.edit_user', user_id=user.id) }}">
         <input type="hidden" name="id" value="{{ user.id }}">
-
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
                 <label class="block text-gray-700">Full Name</label>
                 <input type="text" name="nama" class="border border-gray-300 p-2 w-full" value="{{ user.nama }}"
                     required>
             </div>
-
             <div>
                 <label class="block text-gray-700">Username</label>
                 <input type="text" name="username" class="border border-gray-300 p-2 w-full" value="{{ user.username }}"
                     required>
             </div>
-
             <div>
                 <label class="block text-gray-700">Role</label>
                 <select name="role" class="border border-gray-300 p-2 w-full" required>
@@ -28,42 +24,35 @@
                     {% endfor %}
                 </select>
             </div>
-
             <div>
                 <label class="block text-gray-700">Email</label>
                 <input type="email" name="email" class="border border-gray-300 p-2 w-full" value="{{ user.email }}"
                     required>
             </div>
-
             <div>
                 <label class="block text-gray-700">Affiliation Name</label>
                 <input type="text" name="nama_afiliasi" class="border border-gray-300 p-2 w-full"
                     value="{{ user.nama_afiliasi }}">
             </div>
-
             <div>
                 <label class="block text-gray-700">Scopus ID</label>
                 <input type="text" name="ID_Scopus" class="border border-gray-300 p-2 w-full"
                     value="{{ user.ID_Scopus }}">
             </div>
-
             <div>
                 <label class="block text-gray-700">Sinta ID</label>
                 <input type="number" name="ID_Sinta" class="border border-gray-300 p-2 w-full"
                     value="{{ user.ID_Sinta }}">
             </div>
-
             <div>
                 <label class="block text-gray-700">Google Scholar ID</label>
                 <input type="text" name="ID_GoogleScholar" class="border border-gray-300 p-2 w-full"
                     value="{{ user.ID_GoogleScholar }}">
             </div>
-
             <div>
                 <label class="block text-gray-700">WhatsApp</label>
                 <input type="text" name="NoWa" class="border border-gray-300 p-2 w-full" value="{{ user.NoWa }}">
             </div>
-
             <div>
                 <label class="block text-gray-700">ORCID</label>
                 <input type="text" id="orcid-input" name="ORCID" class="border border-gray-300 p-2 w-full"
@@ -71,8 +60,6 @@
                     title="Enter the correct ORCID format, for example: 1234123412341234 or 1234-1234-1234-1234"
                     maxlength="19" oninput="formatOrcid(this)" value="{{ user.ORCID }}">
             </div>
-
-
             <div>
                 <label class="block text-gray-700">New Password (Optional)</label>
                 <div class="relative">
@@ -84,7 +71,6 @@
                     </button>
                 </div>
             </div>
-
             <div>
                 <label class="block text-gray-700">Confirm Password</label>
                 <div class="relative">
@@ -97,9 +83,7 @@
                 </div>
             </div>
         </div>
-
         <div id="notification" class="text-red-600 font-semibold mt-4 hidden"></div>
-
         <div class="mt-6 flex justify-end gap-5">
             <button type="submit"
                 class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Update</button>
@@ -118,7 +102,6 @@
         for (let i = 0; i < raw.length; i += 4) {
             parts.push(raw.substr(i, 4));
         }
-
         input.value = parts.join('-');
     }
 </script>

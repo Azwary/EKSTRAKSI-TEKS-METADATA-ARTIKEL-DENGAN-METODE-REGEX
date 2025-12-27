@@ -1,59 +1,45 @@
 <div class="bg-blue-900 text-white p-4 max-h-screen flex flex-col">
-    <div class="flex flex-col items-center h-full overflow-y-auto">
-        <img style="width: 60px; height: 30px;" src="{{ url_for('static', filename='img/icon.png') }}" alt="Logo">
-        <ul class="mt-4 w-full space-y-3">
-            <li class="block py-2 text-center border-b border-white">
-                <a href="/dashboard" onclick="setActive(this)">
-                    <i class="fas fa-tachometer-alt"></i><br> Dashboard</a>
-            </li>
-            <li class="block py-2 text-center border-b border-white">
-                <a href="/articles" onclick="setActive(this)">
-                    <i class="fas fa-book"></i><br>Article</a>
-            </li>
-            {% if session.get('role') in ['Chief-Editor', 'Manager'] %}
-            <!-- <li class="block py-2 text-center border-b border-white">
-                <button id="downloadPdf" onclick="setActive(this)">
-                    <a href="/dashboard" class="" >
-                    <i class="fas fa-file-alt "></i><br>Reports
-                    </a>
-                </button>
-            </li> -->
-            <li class="block py-2 text-center border-b border-white">
-                <a href="/grafik" onclick="setActive(this)">
-                    <i class="fas fa-file-alt"></i><br>Reports
-                </a>
-            </li>
-            {% endif %}
-
-            {% if session.get('role') == 'Manager' %}
-            <li class="block py-2 text-center border-b border-white">
-                <a href="/users" onclick="setActive(this)">
-                    <i class="fas fa-user"></i><br>Users</a>
-            </li>
-            {% endif %}
-            <!-- <li><a href="/kartu-ujian" class="block py-2 text-center border-b border-white"><i class="fas fa-file-alt"></i> Kartu Ujian</a></li>  
-                <li><a href="/nilai-khs" class="block py-2 text-center border-b border-white"><i class="fas fa-graduation-cap"></i> Nilai & KHS</a></li>  
-                <li><a href="/kerja-praktik" class="block py-2 text-center border-b border-white"><i class="fas fa-briefcase"></i> Kerja Praktik / Magang</a></li>  
-                <li><a href="/tugas-proyek" class="block py-2 text-center border-b border-white"><i class="fas fa-tasks"></i> Tugas / Proyek Akhir</a></li>  
-                <li><a href="/profil-mahasiswa" class="block py-2 text-center border-b border-white"><i class="fas fa-user"></i> Profil Mahasiswa</a></li>   -->
-            <!-- <li><a href="/logout" class="block py-2  text-center border-b border-white">
-                    <i class="fas fa-sign-out-alt"></i><br>logout</a></li> -->
-        </ul>
-    </div>
-    <!-- <div class="-mt-24">
-        <ul class="mt-4 w-full">
-        <li><a href="/logout" class="block text-center text-sm border-gray-300">
-                <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2"></i><br>Logout</a></li>
-        </ul>
-    </div> -->
+  <div class="flex flex-col items-center h-full overflow-y-auto">
+    <img
+      style="width: 60px; height: 30px"
+      src="{{ url_for('static', filename='img/icon.png') }}"
+      alt="Logo"
+    />
+    <ul class="mt-4 w-full space-y-3">
+      <li class="block py-2 text-center border-b border-white">
+        <a href="/dashboard" onclick="setActive(this)">
+          <i class="fas fa-tachometer-alt"></i><br />
+          Dashboard</a
+        >
+      </li>
+      <li class="block py-2 text-center border-b border-white">
+        <a href="/articles" onclick="setActive(this)">
+          <i class="fas fa-book"></i><br />Article</a
+        >
+      </li>
+      {% if session.get('role') in ['Chief-Editor', 'Manager'] %}
+      <li class="block py-2 text-center border-b border-white">
+        <a href="/grafik" onclick="setActive(this)">
+          <i class="fas fa-file-alt"></i><br />Reports
+        </a>
+      </li>
+      {% endif %} {% if session.get('role') == 'Manager' %}
+      <li class="block py-2 text-center border-b border-white">
+        <a href="/users" onclick="setActive(this)">
+          <i class="fas fa-user"></i><br />Users</a
+        >
+      </li>
+      {% endif %}
+    </ul>
+  </div>
 </div>
 
 <script>
-    function setActive(element) {
-        const links = document.querySelectorAll('.link');
-        links.forEach(link => {
-            // link.classList.remove('font-bold');
-        });
-        element.classList.add('font-bold');
-    }  
+  function setActive(element) {
+    const links = document.querySelectorAll(".link");
+    links.forEach((link) => {
+      // link.classList.remove('font-bold');
+    });
+    element.classList.add("font-bold");
+  }
 </script>

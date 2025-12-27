@@ -1,171 +1,229 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/JurnalArsip.png') }}">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <link
+      rel="icon"
+      type="image/png"
+      href="{{ url_for('static', filename='img/JurnalArsip.png') }}"
+    />
     <title>Jurnal Arsip Teknoif | Register</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
 
-<body class="bg-blue-900 flex items-center justify-center min-h-screen">
-    <!-- <span class="absolute top-0 right-0 m-4 flex items-end">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        {% for category, msg in messages %}
-        {% if category == 'waktu' %}
-        <div class="bg-blue-100 border border-blue-400 text-blue-700 px-2 py-1 rounded relative text-center">
-            {{ msg }}
-        </div>
-        {% endif %}
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
-    </span> -->
+  <body class="bg-blue-900 flex items-center justify-center min-h-screen">
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <div class="text-center mb-6">
-            <div class="text-2xl font-bold text-gray-800">Registration</div>
+      <div class="text-center mb-6">
+        <div class="text-2xl font-bold text-gray-800">Registration</div>
+      </div>
+      <form id="registrationForm" method="POST" action="/register">
+        <div class="mb-6">
+          {% with messages = get_flashed_messages(with_categories=true) %} {% if
+          messages %} {% for category, msg in messages %} {% if category ==
+          'gagal' or category == 'berhasil' %}
+          <div
+            class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-center mb-4"
+          >
+            {{ msg }}
+          </div>
+          {% endif %} {% endfor %} {% endif %} {% endwith %}
+          <br /><br />
         </div>
-        <form id="registrationForm" method="POST" action="/register">
-            <div class="mb-6">
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                {% for category, msg in messages %}
-                {% if category == 'gagal' or category == 'berhasil' %}
-                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-center mb-4">
-                    {{ msg }}
-                </div>
-                {% endif %}
-                {% endfor %}
-                {% endif %}
-                {% endwith %}
-                <br><br>
-            </div>
 
-            <div class="mb-4">
-                <label for="nama" class="block text-gray-700 text-sm font-bold mb-2">Name</label>
-                <input type="text" id="nama" name="nama"
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                    required>
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">Email</label>
-                <input type="email" name="email" class="border border-gray-300 p-2 w-full" required>
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">Affiliate Name</label>
-                <input type="text" name="nama_afiliasi" class="border border-gray-300 p-2 w-full">
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">Scopus ID</label>
-                <input type="number" name="ID_Scopus" class="border border-gray-300 p-2 w-full" maxlength="10">
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">Sinta ID</label>
-                <input type="number" name="ID_Sinta" class="border border-gray-300 p-2 w-full">
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">Google Scholar ID</label>
-                <input type="text" name="ID_GoogleScholar" class="border border-gray-300 p-2 w-full">
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">WhatsApp</label>
-                <input type="number" name="NoWa" class="border border-gray-300 p-2 w-full">
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">ORCID</label>
-                <input type="text" id="orcid-input" name="ORCID" class="border border-gray-300 p-2 w-full"
-                    pattern="\d{4}-\d{4}-\d{4}-\d{3}[0-9X]" placeholder="1234123412341234 or 1234-1234-1234-1234"
-                    title="Enter the correct ORCID format, for example: 1234123412341234 or 1234-1234-1234-1234"
-                    maxlength="19" oninput="formatOrcid(this)">
-
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">Username</label>
-                <input type="text" name="username" class="border border-gray-300 p-2 w-full" required>
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">Password</label>
-                <div class="relative">
-                    <input type="password" id="password" name="password" class="border border-gray-300 p-2 w-full pr-10"
-                        required>
-                    <button type="button" onclick="togglePassword('password')"
-                        class="absolute right-2 top-2 text-gray-600" tabindex="-1">
-                        <i class="fas fa-eye" id="togglePassword_password"></i>
-                    </button>
-                </div>
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-gray-700 font-bold mb-2">Confirmation Password</label>
-                <div class="relative">
-                    <input type="password" id="confirm_password" name="confirm_password"
-                        class="border border-gray-300 p-2 w-full pr-10" required>
-                    <button type="button" onclick="togglePassword('confirm_password')"
-                        class="absolute right-2 top-2 text-gray-600" tabindex="-1">
-                        <i class="fas fa-eye" id="togglePassword_confirm_password"></i>
-                    </button>
-                </div>
-            </div>
-
-            <button type="submit"
-                class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full">Submit</button>
-        </form>
-
-        <div class="flex flex-col items-center justify-end mt-8">
-            <a class="no:underline text-slate-500 hover:text-slate-300 font-normal text-xs"
-                href="{{ url_for('routes.login') }}">
-                Already have an account?
-            </a>
+        <div class="mb-4">
+          <label for="nama" class="block text-gray-700 text-sm font-bold mb-2"
+            >Name</label
+          >
+          <input
+            type="text"
+            id="nama"
+            name="nama"
+            class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            required
+          />
         </div>
-        <div class="text-center mt-6 text-gray-800 text-xs">
-            @ - 2025
+
+        <div class="mb-4">
+          <label class="block text-gray-700 font-bold mb-2">Email</label>
+          <input
+            type="email"
+            name="email"
+            class="border border-gray-300 p-2 w-full"
+            required
+          />
         </div>
+
+        <div class="mb-4">
+          <label class="block text-gray-700 font-bold mb-2"
+            >Affiliate Name</label
+          >
+          <input
+            type="text"
+            name="nama_afiliasi"
+            class="border border-gray-300 p-2 w-full"
+          />
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-gray-700 font-bold mb-2">Scopus ID</label>
+          <input
+            type="number"
+            name="ID_Scopus"
+            class="border border-gray-300 p-2 w-full"
+            maxlength="10"
+          />
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-gray-700 font-bold mb-2">Sinta ID</label>
+          <input
+            type="number"
+            name="ID_Sinta"
+            class="border border-gray-300 p-2 w-full"
+          />
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-gray-700 font-bold mb-2"
+            >Google Scholar ID</label
+          >
+          <input
+            type="text"
+            name="ID_GoogleScholar"
+            class="border border-gray-300 p-2 w-full"
+          />
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-gray-700 font-bold mb-2">WhatsApp</label>
+          <input
+            type="number"
+            name="NoWa"
+            class="border border-gray-300 p-2 w-full"
+          />
+        </div>
+
+        <div class="mb-4">
+          <label class="block text-gray-700 font-bold mb-2">ORCID</label>
+          <input
+            type="text"
+            id="orcid-input"
+            name="ORCID"
+            class="border border-gray-300 p-2 w-full"
+            pattern="\d{4}-\d{4}-\d{4}-\d{3}[0-9X]"
+            placeholder="1234123412341234 or 1234-1234-1234-1234"
+            title="Enter the correct ORCID format, for example: 1234123412341234 or 1234-1234-1234-1234"
+            maxlength="19"
+            oninput="formatOrcid(this)"
+          />
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 font-bold mb-2">Username</label>
+          <input
+            type="text"
+            name="username"
+            class="border border-gray-300 p-2 w-full"
+            required
+          />
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 font-bold mb-2">Password</label>
+          <div class="relative">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="border border-gray-300 p-2 w-full pr-10"
+              required
+            />
+            <button
+              type="button"
+              onclick="togglePassword('password')"
+              class="absolute right-2 top-2 text-gray-600"
+              tabindex="-1"
+            >
+              <i class="fas fa-eye" id="togglePassword_password"></i>
+            </button>
+          </div>
+        </div>
+        <div class="mb-4">
+          <label class="block text-gray-700 font-bold mb-2"
+            >Confirmation Password</label
+          >
+          <div class="relative">
+            <input
+              type="password"
+              id="confirm_password"
+              name="confirm_password"
+              class="border border-gray-300 p-2 w-full pr-10"
+              required
+            />
+            <button
+              type="button"
+              onclick="togglePassword('confirm_password')"
+              class="absolute right-2 top-2 text-gray-600"
+              tabindex="-1"
+            >
+              <i class="fas fa-eye" id="togglePassword_confirm_password"></i>
+            </button>
+          </div>
+        </div>
+        <button
+          type="submit"
+          class="bg-blue-800 hover:bg-blue-900 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full"
+        >
+          Submit
+        </button>
+      </form>
+      <div class="flex flex-col items-center justify-end mt-8">
+        <a
+          class="no:underline text-slate-500 hover:text-slate-300 font-normal text-xs"
+          href="{{ url_for('routes.login') }}"
+        >
+          Already have an account?
+        </a>
+      </div>
+      <div class="text-center mt-6 text-gray-800 text-xs">@ - 2025</div>
     </div>
     <script>
-        function formatOrcid(input) {
-            let raw = input.value.replace(/\D/g, '');
+      function formatOrcid(input) {
+        let raw = input.value.replace(/\D/g, "");
 
-            if (raw.length > 16) raw = raw.substring(0, 16);
+        if (raw.length > 16) raw = raw.substring(0, 16);
 
-            let parts = [];
-            for (let i = 0; i < raw.length; i += 4) {
-                parts.push(raw.substr(i, 4));
-            }
-
-            input.value = parts.join('-');
+        let parts = [];
+        for (let i = 0; i < raw.length; i += 4) {
+          parts.push(raw.substr(i, 4));
         }
-    </script>
 
+        input.value = parts.join("-");
+      }
+    </script>
     <script>
-        function togglePassword(fieldId) {
-            const input = document.getElementById(fieldId);
-            const icon = document.getElementById('togglePassword_' + fieldId);
-            if (input.type === "password") {
-                input.type = "text";
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                input.type = "password";
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
+      function togglePassword(fieldId) {
+        const input = document.getElementById(fieldId);
+        const icon = document.getElementById("togglePassword_" + fieldId);
+        if (input.type === "password") {
+          input.type = "text";
+          icon.classList.remove("fa-eye");
+          icon.classList.add("fa-eye-slash");
+        } else {
+          input.type = "password";
+          icon.classList.remove("fa-eye-slash");
+          icon.classList.add("fa-eye");
         }
+      }
     </script>
-</body>
-
+  </body>
 </html>

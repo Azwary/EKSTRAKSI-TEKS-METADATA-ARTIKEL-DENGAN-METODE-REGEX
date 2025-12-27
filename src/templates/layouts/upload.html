@@ -1,27 +1,5 @@
 {% extends 'layouts/base.html' %} {% block title %}Upload Article{% endblock %}
 {% block content %}
-
-<!-- {% if error_message %} -->
-<!-- <script>
-     Swal.fire({
-          icon: 'error',
-          title: 'Oops...',
-          text: '{{ error_message }}',
-     });
-</script>
-{% endif %}
-
-{% if success_message %}
-<script>
-     Swal.fire({
-          icon: 'success',
-          title: 'Berhasil',
-          text: '{{ success_message }}',
-     });
-</script>
-{% endif %} -->
-
-<!-- <p class="text-2xl font-semibold mb-4"></p> -->
 <h2 class="text-2xl font-bold mb-6">Upload New Article</h2>
 <form id="uploadForm" method="post" enctype="multipart/form-data">
   <div
